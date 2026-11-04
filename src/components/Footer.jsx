@@ -1,113 +1,137 @@
+
 import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-pink-200 bg-pink-100 text-pink-950">
-  <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-3">
-    {/* Brand */}
-    <div>
-      <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-pink-400">
-          ◉
-        </span>
-        StudioSpace
-      </Link>
+    <footer className="border-t border-pink-200 bg-pink-50 text-pink-950">
+      {/* Main Footer */}
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:grid-cols-2 sm:px-6 sm:py-14 lg:grid-cols-3 lg:gap-16">
 
-      <p className="mt-4 max-w-xs text-sm leading-6 text-pink-800">
-        Discover inspiring studios and find the perfect creative space for your
-        next project.
-      </p>
+        {/* Brand Section */}
+        <div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xl font-bold tracking-tight"
+          >
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-600 text-xl text-white shadow-sm">
+              ◉
+            </span>
+            StudioSpace
+          </Link>
 
-      <p className="mt-6 text-xs text-pink-700">
-        © 2026 StudioSpace. All rights reserved.
-      </p>
+          <p className="mt-4 max-w-sm text-sm leading-7 text-pink-800">
+            Discover inspiring studios and find the perfect creative space
+            for your next big idea. Your creativity deserves the right space.
+          </p>
 
-      <div className="mt-2 flex gap-4 text-xs">
-        <Link href="/terms" className="hover:text-pink-600">
-          Terms
-        </Link>
-        <Link href="/privacy" className="hover:text-pink-600">
-          Privacy
-        </Link>
+          {/* Social Links */}
+          <div className="mt-6">
+            <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-pink-700">
+              Follow Us
+            </h3>
+
+            <div className="flex items-center gap-3">
+              <Link
+                href="https://x.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="StudioSpace on X"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-pink-200 bg-white text-lg font-bold transition hover:border-pink-600 hover:bg-pink-600 hover:text-white"
+              >
+                𝕏
+              </Link>
+
+              <Link
+                href="https://instagram.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="StudioSpace on Instagram"
+                className="flex h-9 items-center justify-center rounded-full border border-pink-200 bg-white px-3 text-xs font-medium transition hover:border-pink-600 hover:bg-pink-600 hover:text-white"
+              >
+                Instagram
+              </Link>
+
+              <Link
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="StudioSpace on LinkedIn"
+                className="flex h-9 items-center justify-center rounded-full border border-pink-200 bg-white px-3 text-xs font-medium transition hover:border-pink-600 hover:bg-pink-600 hover:text-white"
+              >
+                LinkedIn
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Navigation */}
+        <div>
+          <h3 className="text-sm font-bold tracking-wide text-pink-950">
+            Quick Navigation
+          </h3>
+
+          <div className="mt-5 flex flex-col gap-3 text-sm text-pink-800">
+            <Link href="/" className="transition hover:translate-x-1 hover:text-pink-600">
+              Home
+            </Link>
+            <Link href="/studios" className="transition hover:translate-x-1 hover:text-pink-600">
+              Explore Studios
+            </Link>
+            <Link href="#how-it-works" className="transition hover:translate-x-1 hover:text-pink-600">
+              How It Works
+            </Link>
+            <Link href="#about" className="transition hover:translate-x-1 hover:text-pink-600">
+              About Us
+            </Link>
+            <Link href="/contact" className="transition hover:translate-x-1 hover:text-pink-600">
+              Contact
+            </Link>
+          </div>
+        </div>
+
+        {/* Popular Categories */}
+        <div>
+          <h3 className="text-sm font-bold tracking-wide text-pink-950">
+            Popular Categories
+          </h3>
+
+          <div className="mt-5 flex flex-col gap-3 text-sm text-pink-800">
+            <Link href="/studios/photography" className="transition hover:translate-x-1 hover:text-pink-600">
+              Photography Studios
+            </Link>
+            <Link href="/studios/music" className="transition hover:translate-x-1 hover:text-pink-600">
+              Music Studios
+            </Link>
+            <Link href="/studios/film" className="transition hover:translate-x-1 hover:text-pink-600">
+              Film Studios
+            </Link>
+            <Link href="/studios/art" className="transition hover:translate-x-1 hover:text-pink-600">
+              Art Studios
+            </Link>
+            <Link href="/studios/podcast" className="transition hover:translate-x-1 hover:text-pink-600">
+              Podcast Studios
+            </Link>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-6 flex gap-4">
-        <Link
-          href="https://x.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="StudioSpace on X"
-          className="text-lg font-bold hover:text-pink-600"
-        >
-          𝕏
-        </Link>
+      {/* Bottom Bar */}
+      <div className="border-t border-pink-200 bg-pink-100/70">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-center sm:flex-row sm:px-6 sm:text-left">
+          <p className="text-xs text-pink-800">
+            © 2026 StudioSpace. All rights reserved.
+          </p>
 
-        <Link
-          href="https://instagram.com"
-          target="_blank"
-          rel="noreferrer"
-          className="text-sm hover:text-pink-600"
-        >
-          Instagram
-        </Link>
-
-        <Link
-          href="https://linkedin.com"
-          target="_blank"
-          rel="noreferrer"
-          className="text-sm hover:text-pink-600"
-        >
-          LinkedIn
-        </Link>
+          <div className="flex items-center gap-5 text-xs text-pink-800">
+            <Link href="/terms" className="transition hover:text-pink-600">
+              Terms & Conditions
+            </Link>
+            <Link href="/privacy" className="transition hover:text-pink-600">
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
       </div>
-    </div>
-
-    {/* Quick navigation */}
-    <div>
-      <h3 className="font-semibold">Quick Navigation</h3>
-
-      <div className="mt-4 flex flex-col gap-3 text-sm text-pink-800">
-        <Link href="/" className="hover:text-pink-600">
-          Home
-        </Link>
-        <Link href="/studios" className="hover:text-pink-600">
-          Explore Studios
-        </Link>
-        <Link href="#how-it-works" className="hover:text-pink-600">
-          How It Works
-        </Link>
-        <Link href="#about" className="hover:text-pink-600">
-          About Us
-        </Link>
-        <Link href="/contact" className="hover:text-pink-600">
-          Contact
-        </Link>
-      </div>
-    </div>
-
-    {/* Categories */}
-    <div>
-      <h3 className="font-semibold">Popular Categories</h3>
-
-      <div className="mt-4 flex flex-col gap-3 text-sm text-pink-800">
-        <Link href="/studios/photography" className="hover:text-pink-600">
-          Photography Studios
-        </Link>
-        <Link href="/studios/music" className="hover:text-pink-600">
-          Music Studios
-        </Link>
-        <Link href="/studios/film" className="hover:text-pink-600">
-          Film Studios
-        </Link>
-        <Link href="/studios/art" className="hover:text-pink-600">
-          Art Studios
-        </Link>
-        <Link href="/studios/podcast" className="hover:text-pink-600">
-          Podcast Studios
-        </Link>
-      </div>
-    </div>
-  </div>
-</footer>
+    </footer>
   );
 }

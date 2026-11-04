@@ -1,9 +1,11 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import StudioSkeleton from "@/components/StudioSkeleton";
 import Link from "next/link";
+import StudioSkeleton from "@/components/StudioSkeleton";
+
 export default function Studios({ limit }) {
   const [studios, setStudios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,8 +14,12 @@ export default function Studios({ limit }) {
     const fetchStudios = async () => {
       try {
         const res = await fetch("http://localhost:5000/studios");
-        const data = await res.json();
 
+        if (!res.ok) {
+          throw new Error("Failed to fetch studios");
+        }
+
+        const data = await res.json();
         setStudios(data);
       } catch (error) {
         console.error("Failed to fetch studios:", error);
@@ -25,7 +31,15 @@ export default function Studios({ limit }) {
     fetchStudios();
   }, []);
 
-  const visibleStudios = limit ? studios.slice(0, limit) : studios;
+  // Sort by rating only when limit is provided (homepage)
+  const visibleStudios = limit
+    ? [...studios]
+        .sort(
+          (a, b) =>
+            (Number(b.rating) || 0) - (Number(a.rating) || 0)
+        )
+        .slice(0, limit)
+    : studios;
 
   return (
     <>
@@ -44,11 +58,10 @@ export default function Studios({ limit }) {
       ) : (
         <div className="grid grid-cols-1 gap-3 px-4 py-6 sm:grid-cols-2 sm:gap-5 sm:px-6 sm:py-8 lg:grid-cols-3 lg:px-8">
           {visibleStudios.map((studio) => (
-            <Link
-  href={`/studios/${studio._id}`}
-  key={studio._id}
-  className="block overflow-hidden rounded-xl border border-pink-100 bg-white shadow-sm transition hover:shadow-md sm:rounded-2xl"
->
+            <div
+              key={studio._id}
+              className="overflow-hidden rounded-xl border border-pink-100 bg-white shadow-sm transition hover:shadow-md sm:rounded-2xl"
+            >
               {/* Studio Image */}
               <div className="relative h-36 w-full sm:h-48">
                 <Image
@@ -61,6 +74,7 @@ export default function Studios({ limit }) {
               </div>
 
               <div className="p-3 sm:p-5">
+                {/* Title and Category */}
                 <h2 className="text-base font-bold text-gray-900 sm:text-lg">
                   {studio.title}
                 </h2>
@@ -72,10 +86,14 @@ export default function Studios({ limit }) {
                 {/* Rating */}
                 <div className="mt-2 flex items-center gap-1 text-xs sm:text-sm">
                   <span className="text-yellow-500">★</span>
+
                   <span className="font-semibold text-gray-800">
-                    {studio.rating}
+                    {studio.rating ?? "No rating"}
                   </span>
-                  <span className="text-gray-400">/ 5</span>
+
+                  {studio.rating != null && (
+                    <span className="text-gray-400">/ 5</span>
+                  )}
                 </div>
 
                 {/* Studio Information */}
@@ -88,7 +106,7 @@ export default function Studios({ limit }) {
 
                 {/* Overview */}
                 <p className="mt-3 line-clamp-3 text-xs text-gray-500 sm:mt-4 sm:text-sm">
-                  {studio.overview}
+                  {studio.overview || "No description available."}
                 </p>
 
                 {/* Amenities */}
@@ -102,8 +120,16 @@ export default function Studios({ limit }) {
                     </span>
                   ))}
                 </div>
+
+                {/* View Details Button */}
+                <Link
+                  href={`/studios/${studio._id}`}
+                  className="mt-4 block w-full rounded-lg bg-pink-600 px-4 py-2 text-center text-xs font-semibold text-white transition hover:bg-pink-700 sm:text-sm"
+                >
+                  View Details →
+                </Link>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

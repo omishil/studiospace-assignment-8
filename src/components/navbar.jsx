@@ -71,19 +71,20 @@ export default function Navbar() {
 
         {/* Desktop buttons */}
         <div className="hidden items-center gap-3 md:flex">
-          <button
-            type="button"
-            className="rounded-md border border-pink-400 px-4 py-2 text-sm font-medium text-pink-900 transition hover:bg-pink-200"
-          >
-            Sign In
-          </button>
 
-          <button
-            type="button"
-            className="rounded-md bg-pink-400 px-4 py-2 text-sm font-semibold text-pink-950 transition hover:bg-pink-300"
-          >
-            Sign Out
-          </button>
+<Link
+  href="/Login"
+  className="rounded-md border border-pink-400 px-4 py-2 text-sm font-medium text-pink-900 transition hover:bg-pink-200"
+>
+  Sign In
+</Link>
+
+<Link
+  href="/register"
+  className="rounded-md bg-pink-400 px-4 py-2 text-sm font-semibold text-pink-950 transition hover:bg-pink-300"
+>
+  Sign Out
+</Link>   
         </div>
 
         {/* Mobile menu button */}
