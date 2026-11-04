@@ -128,3 +128,109 @@
     @apply font-sans;
   }
 }
+/* slider arrow */
+/* StudioSpace — Minimal Hero Slider Arrows */
+
+.studio-hero .swiper-button-prev,
+.studio-hero .swiper-button-next {
+  width: 42px;
+  height: 58px;
+  margin-top: -29px;
+  border-radius: 10px;
+
+  background: rgba(20, 20, 20, 0.28);
+  color: #ffffff;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background 0.25s ease;
+}
+
+/* Keep arrows white on hover, click, and focus */
+.studio-hero .swiper-button-prev:hover,
+.studio-hero .swiper-button-next:hover,
+.studio-hero .swiper-button-prev:active,
+.studio-hero .swiper-button-next:active,
+.studio-hero .swiper-button-prev:focus,
+.studio-hero .swiper-button-next:focus {
+  background: rgba(20, 20, 20, 0.45);
+  color: #ffffff;
+  outline: none;
+}
+
+/* Remove default Swiper arrow icons */
+.studio-hero .swiper-button-prev::after,
+.studio-hero .swiper-button-next::after {
+  display: none;
+}
+
+/* Custom white chevron arrows */
+.studio-hero .swiper-button-prev::before,
+.studio-hero .swiper-button-next::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+
+  border-top: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
+
+  transition: none;
+}
+
+.studio-hero .swiper-button-prev::before {
+  transform: rotate(-135deg);
+  margin-left: 5px;
+}
+
+.studio-hero .swiper-button-next::before {
+  transform: rotate(45deg);
+  margin-right: 5px;
+}
+
+/* Arrow positions */
+.studio-hero .swiper-button-prev {
+  left: 16px;
+}
+
+.studio-hero .swiper-button-next {
+  right: 16px;
+}
+
+/* Disabled arrow state */
+.studio-hero .swiper-button-disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Responsive mobile styles */
+@media (max-width: 640px) {
+  .studio-hero .swiper-button-prev,
+  .studio-hero .swiper-button-next {
+    width: 30px;
+    height: 42px;
+    margin-top: -21px;
+    border-radius: 7px;
+  }
+
+  .studio-hero .swiper-button-prev {
+    left: 8px;
+  }
+
+  .studio-hero .swiper-button-next {
+    right: 8px;
+  }
+
+  .studio-hero .swiper-button-prev::before,
+  .studio-hero .swiper-button-next::before {
+    width: 8px;
+    height: 8px;
+  }
+}
