@@ -1,8 +1,11 @@
+
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession, signOut } from "@/lib/auth-client";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -16,7 +19,14 @@ const focusRing =
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
   const pathname = usePathname();
+  const router = useRouter();
+
+  const { data: session, isPending } = useSession();
+
+  const isLoggedIn = !!session?.user;
 
   const isActive = (href) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -28,9 +38,20 @@ export default function Navbar() {
         : "text-gray-600 hover:bg-pink-50 hover:text-pink-700"
     }`;
 
+  const handleLogout = async () => {
+    await signOut();
+
+    setMenuOpen(false);
+    setUserMenuOpen(false);
+
+    router.push("/");
+    router.refresh();
+  };
+
   return (
-    <header className="sticky top-0 z-50  bg-[#fff8fb]/85 backdrop-blur-md border-b-2 border-pink-100">
+    <header className="sticky top-0 z-50 border-b-2 border-pink-100 bg-[#fff8fb]/85 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+
         {/* Logo */}
         <Link
           href="/"
@@ -73,21 +94,71 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Desktop buttons */}
+        {/* Desktop authentication */}
         <div className="hidden items-center gap-2 md:flex">
-          <Link
-            href="/Login"
-            className={`rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-pink-50 hover:text-pink-700 ${focusRing}`}
-          >
-            Login
-          </Link>
+          {isPending ? (
+            <span className="text-sm text-gray-400">Loading...</span>
+          ) : isLoggedIn ? (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((open) => !open)}
+                className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-pink-50 ${focusRing}`}
+              >
+                {session.user.image && (
+                  <Image
+                    src={session.user.image}
+                    alt="Profile"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 rounded-full border-2 border-pink-200 object-cover"
+                  />
+                )}
 
-          <Link
-            href="/register"
-            className={`rounded-lg bg-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-pink-200 transition-colors hover:bg-pink-700 ${focusRing}`}
-          >
-            Register
-          </Link>
+                <span className="max-w-32 truncate">
+                  {session.user.name || "My Account"}
+                </span>
+
+                <span>▾</span>
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-pink-100 bg-white p-2 shadow-lg">
+                  <Link
+                    href="/profile"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-700"
+                  >
+                    My Profile
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link
+                href="/Login"
+                className={`rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-pink-50 hover:text-pink-700 ${focusRing}`}
+              >
+                Login
+              </Link>
+
+              <Link
+                href="/register"
+                className={`rounded-lg bg-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-pink-200 transition-colors hover:bg-pink-700 ${focusRing}`}
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -131,29 +202,77 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
                 aria-current={isActive(link.href) ? "page" : undefined}
-                className={`${linkClass(link.href)} py-3 text-base`}
+                className={`${linkClass(link.href)} py-3 text-sm sm:text-base`}
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-pink-100 pt-4">
-            <Link
-              href="/Login"
-              onClick={() => setMenuOpen(false)}
-              className={`rounded-lg border border-pink-200 bg-white px-3 py-2.5 text-center text-sm font-semibold text-gray-700 transition-colors hover:bg-pink-50 ${focusRing}`}
-            >
-              Login
-            </Link>
+          <div className="mt-4 border-t border-pink-100 pt-4">
+            {isPending ? (
+              <p className="text-center text-sm text-gray-400">
+                Loading...
+              </p>
+            ) : isLoggedIn ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 rounded-lg bg-pink-50 p-3">
+                  {session.user.image && (
+                    <Image
+                      src={session.user.image}
+                      alt="Profile"
+                      width={36}
+                      height={36}
+                      className="h-9 w-9 rounded-full border-2 border-pink-200 object-cover"
+                    />
+                  )}
 
-            <Link
-              href="/register"
-              onClick={() => setMenuOpen(false)}
-              className={`rounded-lg bg-pink-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-sm shadow-pink-200 transition-colors hover:bg-pink-700 ${focusRing}`}
-            >
-              Register
-            </Link>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-gray-800">
+                      {session.user.name || "My Account"}
+                    </p>
+
+                    <p className="truncate text-xs text-gray-500">
+                      {session.user.email}
+                    </p>
+                  </div>
+                </div>
+
+                <Link
+                  href="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-pink-50"
+                >
+                  My Profile
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full rounded-lg bg-red-50 px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-100"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <Link
+                  href="/Login"
+                  onClick={() => setMenuOpen(false)}
+                  className={`rounded-lg border border-pink-200 bg-white px-3 py-2.5 text-center text-sm font-semibold text-gray-700 transition-colors hover:bg-pink-50 ${focusRing}`}
+                >
+                  Login
+                </Link>
+
+                <Link
+                  href="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className={`rounded-lg bg-pink-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-sm shadow-pink-200 transition-colors hover:bg-pink-700 ${focusRing}`}
+                >
+                  Register
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
