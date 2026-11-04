@@ -16,7 +16,7 @@ export default function Home() {
         </p>
 
         <div className="mt-6">
-          <StudiosPage></StudiosPage>
+          <StudiosPage limit={6} ></StudiosPage>
         </div>
       </section>
     </div>

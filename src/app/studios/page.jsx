@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import StudioSkeleton from "@/components/StudioSkeleton";
-
-export default function Studios() {
+import Link from "next/link";
+export default function Studios({ limit }) {
   const [studios, setStudios] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,22 +25,30 @@ export default function Studios() {
     fetchStudios();
   }, []);
 
+  const visibleStudios = limit ? studios.slice(0, limit) : studios;
+
   return (
     <>
       {loading ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((item) => (
-            <StudioSkeleton key={item} />
-          ))}
+        <div className="grid grid-cols-1 gap-3 px-4 py-6 sm:grid-cols-2 sm:gap-5 sm:px-6 sm:py-8 lg:grid-cols-3 lg:px-8">
+          {[1, 2, 3, 4, 5, 6]
+            .slice(0, limit || 6)
+            .map((item) => (
+              <StudioSkeleton key={item} />
+            ))}
         </div>
-      ) : studios.length === 0 ? (
-        <p className="text-sm text-gray-500">No studios found.</p>
+      ) : visibleStudios.length === 0 ? (
+        <p className="px-4 py-6 text-sm text-gray-500">
+          No studios found.
+        </p>
       ) : (
-<div className="grid grid-cols-1 gap-3 px-4 py-6 sm:grid-cols-2 sm:gap-5 sm:px-6 sm:py-8 lg:grid-cols-3 lg:px-8">          {studios.map((studio) => (
-            <div
-              key={studio._id}
-              className="overflow-hidden rounded-xl border border-pink-100 bg-white shadow-sm sm:rounded-2xl"
-            >
+        <div className="grid grid-cols-1 gap-3 px-4 py-6 sm:grid-cols-2 sm:gap-5 sm:px-6 sm:py-8 lg:grid-cols-3 lg:px-8">
+          {visibleStudios.map((studio) => (
+            <Link
+  href={`/studios/${studio._id}`}
+  key={studio._id}
+  className="block overflow-hidden rounded-xl border border-pink-100 bg-white shadow-sm transition hover:shadow-md sm:rounded-2xl"
+>
               {/* Studio Image */}
               <div className="relative h-36 w-full sm:h-48">
                 <Image
@@ -95,7 +103,7 @@ export default function Studios() {
                   ))}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
