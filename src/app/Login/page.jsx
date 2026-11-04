@@ -6,7 +6,15 @@ import { useState } from "react";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  const formData = new FormData(e.target);
+
+  const loginData = Object.fromEntries(formData.entries());
+
+
+};
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-[#fff8fb] px-4 py-10 sm:py-14">
       <div className="w-full max-w-md rounded-2xl border border-pink-100 bg-white p-5 shadow-lg shadow-pink-100/50 sm:p-8">
@@ -27,7 +35,8 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form */}
-        <form className="space-y-4">
+        <form className="space-y-4 "
+        onSubmit={handleSubmit}>
 
           {/* Email */}
           <div>

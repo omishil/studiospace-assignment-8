@@ -76,7 +76,7 @@ export default function Navbar() {
         {/* Desktop buttons */}
         <div className="hidden items-center gap-2 md:flex">
           <Link
-            href="/login"
+            href="/Login"
             className={`rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-pink-50 hover:text-pink-700 ${focusRing}`}
           >
             Login
@@ -140,7 +140,7 @@ export default function Navbar() {
 
           <div className="mt-4 grid grid-cols-2 gap-3 border-t border-pink-100 pt-4">
             <Link
-              href="/login"
+              href="/Login"
               onClick={() => setMenuOpen(false)}
               className={`rounded-lg border border-pink-200 bg-white px-3 py-2.5 text-center text-sm font-semibold text-gray-700 transition-colors hover:bg-pink-50 ${focusRing}`}
             >

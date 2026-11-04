@@ -3,35 +3,52 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
+  // const [passwordError, setPasswordError] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!/[A-Z]/.test(password)) {
-      setPasswordError("Password must contain at least one uppercase letter.");
-      return;
-    }
+  const formData = new FormData(e.target);
+  const signUpData = Object.fromEntries(formData.entries());
 
-    if (!/[a-z]/.test(password)) {
-      setPasswordError("Password must contain at least one lowercase letter.");
-      return;
-    }
+  const password = signUpData.password;
 
-    if (password.length < 6) {
-      setPasswordError("Password must be at least 6 characters long.");
-      return;
-    }
+  // if (!/[A-Z]/.test(password)) {
+  //   setPasswordError("Password must contain at least one uppercase letter.");
+  //   return;
+  // }
 
-    setPasswordError("");
+  // if (!/[a-z]/.test(password)) {
+  //   setPasswordError("Password must contain at least one lowercase letter.");
+  //   return;
+  // }
 
-    // Registration logic will be added later.
-    console.log("Password is valid!");
-  };
+  // if (password.length < 6) {
+  //   setPasswordError("Password must be at least 6 characters long.");
+  //   return;
+  // }
+
+  // setPasswordError("");
+
+const { data, error } = await authClient.signUp.email({
+  name: signUpData.name,
+  email: signUpData.email,
+  password: signUpData.password,
+  image: signUpData.image,
+});
+
+  if (error) {
+    console.log(error.message);
+    return;
+  }
+
+  console.log(data);
+};
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-[#fff8fb] px-4 py-10">
@@ -52,6 +69,7 @@ export default function RegisterPage() {
               Name
             </label>
             <input
+            name="name"
               type="text"
               required
               placeholder="Enter your name"
@@ -64,6 +82,7 @@ export default function RegisterPage() {
               Email
             </label>
             <input
+            name="email"
               type="email"
               required
               placeholder="Enter your email"
@@ -76,6 +95,7 @@ export default function RegisterPage() {
               Photo URL
             </label>
             <input
+            name="image"
               type="url"
               required
               placeholder="Enter your photo URL"
@@ -89,17 +109,18 @@ export default function RegisterPage() {
             </label>
 
             <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setPasswordError("");
-                }}
-                placeholder="Create a password"
-                className="w-full rounded-lg border border-pink-200 px-3 py-3 pr-16 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
-              />
+        <input
+  name="password"
+  type={showPassword ? "text" : "password"}
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  required
+  minLength={6}
+  pattern="(?=.*[A-Z])(?=.*[a-z]).{6,}"
+  title="Password must contain at least 6 characters, one uppercase letter, and one lowercase letter."
+  placeholder="Create a password"
+  className="w-full rounded-lg border border-pink-200 px-3 py-3 pr-16 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
+/>
 
               <button
                 type="button"
@@ -120,11 +141,11 @@ export default function RegisterPage() {
               <li>• One lowercase letter (a-z)</li>
             </ul>
 
-            {passwordError && (
+            {/* {passwordError && (
               <p className="mt-2 text-xs font-medium text-red-600">
                 {passwordError}
               </p>
-            )}
+            )} */}
           </div>
 
           <button

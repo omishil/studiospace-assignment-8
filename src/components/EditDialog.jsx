@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -8,11 +9,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 export default function EditDialog({ studio }) {
+  
+  const router = useRouter();
+
  const handleSubmit = async (e) => {
   e.preventDefault();
-
   const formData = new FormData(e.target);
   const updatedStudio = Object.fromEntries(formData.entries());
 
@@ -26,15 +28,18 @@ export default function EditDialog({ studio }) {
       body: JSON.stringify(updatedStudio),
     }
   );
-
+if (res.ok) {
+  router.refresh();
+}
   const data = await res.json();
   console.log(data);
 };
   return (
     <Dialog>
-      <DialogTrigger className="rounded-lg bg-pink-600 px-4 py-2 text-white hover:bg-pink-700">
-        Edit Studio
-      </DialogTrigger>
+      <DialogTrigger className="inline-flex items-center gap-2 rounded-lg border border-pink-800 bg-pink-100 px-4 py-2 text-sm font-semibold text-pink-800 shadow-sm transition hover:border-pink-400 hover:bg-pink-100">
+  <span>✎</span>
+  Edit Studio Details
+</DialogTrigger>
 
       <DialogContent className="max-h-[85vh] overflow-y-auto">
         <DialogHeader>
