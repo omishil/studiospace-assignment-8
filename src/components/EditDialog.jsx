@@ -10,15 +10,26 @@ import {
 } from "@/components/ui/dialog";
 
 export default function EditDialog({ studio }) {
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const formData = new FormData(e.target);
-    const updatedStudio = Object.fromEntries(formData.entries());
+  const formData = new FormData(e.target);
+  const updatedStudio = Object.fromEntries(formData.entries());
 
-    console.log(updatedStudio);
-  };
+  const res = await fetch(
+    `http://localhost:5000/studios/${studio._id}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedStudio),
+    }
+  );
 
+  const data = await res.json();
+  console.log(data);
+};
   return (
     <Dialog>
       <DialogTrigger className="rounded-lg bg-pink-600 px-4 py-2 text-white hover:bg-pink-700">

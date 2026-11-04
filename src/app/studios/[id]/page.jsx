@@ -39,7 +39,7 @@ export default async function StudioDetailsPage({ params }) {
     <h1 className="text-2xl font-bold text-gray-900 sm:text-4xl">
       {studio.title}
     </h1>
-
+{/* edit button */}
     <EditDialog studio={studio} studioId={id} />
   </div>
 
