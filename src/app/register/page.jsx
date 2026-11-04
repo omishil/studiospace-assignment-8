@@ -4,12 +4,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-
+import { useRouter } from "next/navigation";
 export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   // const [passwordError, setPasswordError] = useState("");
-
+const router = useRouter();
  const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -46,7 +46,7 @@ const { data, error } = await authClient.signUp.email({
     console.log(error.message);
     return;
   }
-
+router.push("/");
   console.log(data);
 };
 
