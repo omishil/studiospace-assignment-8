@@ -1,7 +1,38 @@
 
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 export default function RegisterPage() {
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!/[A-Z]/.test(password)) {
+      setPasswordError("Password must contain at least one uppercase letter.");
+      return;
+    }
+
+    if (!/[a-z]/.test(password)) {
+      setPasswordError("Password must contain at least one lowercase letter.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    setPasswordError("");
+
+    // Registration logic will be added later.
+    console.log("Password is valid!");
+  };
+
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-[#fff8fb] px-4 py-10">
       <div className="w-full max-w-md rounded-2xl border border-pink-100 bg-white p-5 shadow-lg sm:p-8">
@@ -15,13 +46,14 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Name
             </label>
             <input
               type="text"
+              required
               placeholder="Enter your name"
               className="w-full rounded-lg border border-pink-200 px-3 py-3 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
             />
@@ -33,6 +65,7 @@ export default function RegisterPage() {
             </label>
             <input
               type="email"
+              required
               placeholder="Enter your email"
               className="w-full rounded-lg border border-pink-200 px-3 py-3 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
             />
@@ -44,6 +77,7 @@ export default function RegisterPage() {
             </label>
             <input
               type="url"
+              required
               placeholder="Enter your photo URL"
               className="w-full rounded-lg border border-pink-200 px-3 py-3 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
             />
@@ -53,14 +87,44 @@ export default function RegisterPage() {
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Password
             </label>
-            <input
-              type="password"
-              placeholder="Create a password"
-              className="w-full rounded-lg border border-pink-200 px-3 py-3 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
-            />
-            <p className="mt-2 text-xs text-gray-500">
-              At least 6 characters, one uppercase letter, and one lowercase letter.
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError("");
+                }}
+                placeholder="Create a password"
+                className="w-full rounded-lg border border-pink-200 px-3 py-3 pr-16 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-pink-600 hover:text-pink-800"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+
+            <p className="mt-2 text-xs leading-5 text-gray-500">
+              Password must contain:
             </p>
+
+            <ul className="mt-1 space-y-1 text-xs text-gray-500">
+              <li>• At least 6 characters</li>
+              <li>• One uppercase letter (A-Z)</li>
+              <li>• One lowercase letter (a-z)</li>
+            </ul>
+
+            {passwordError && (
+              <p className="mt-2 text-xs font-medium text-red-600">
+                {passwordError}
+              </p>
+            )}
           </div>
 
           <button
@@ -71,9 +135,9 @@ export default function RegisterPage() {
           </button>
         </form>
 
-             <button
+        <button
           type="button"
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+          className="mt-4 flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -98,6 +162,7 @@ export default function RegisterPage() {
             Login
           </Link>
         </p>
+
       </div>
     </div>
   );

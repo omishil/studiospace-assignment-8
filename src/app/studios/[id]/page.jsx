@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-
+import EditDialog from '../../../components/EditDialog'
 export default async function StudioDetailsPage({ params }) {
   const { id } = await params;
 
@@ -28,21 +28,29 @@ export default async function StudioDetailsPage({ params }) {
           />
         </div>
 
-        {/* Studio Header */}
-        <div className="mt-6">
-          <p className="text-sm font-medium text-pink-600">
-            {studio.category}
-          </p>
+   
+{/* Studio Header */}
+<div className="mt-6">
+  <p className="text-sm font-medium text-pink-600">
+    {studio.category}
+  </p>
 
-          <h1 className="mt-2 text-2xl font-bold text-gray-900 sm:text-4xl">
-            {studio.title}
-          </h1>
+  <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
+    <h1 className="text-2xl font-bold text-gray-900 sm:text-4xl">
+      {studio.title}
+    </h1>
 
-          <div className="mt-3 flex flex-wrap gap-4 text-sm text-gray-600">
-            <p>📍 {studio.location}</p>
-            <p>⭐ {studio.rating ?? "No rating"}{studio.rating != null && " / 5"}</p>
-          </div>
-        </div>
+    <EditDialog studio={studio} studioId={id} />
+  </div>
+
+  <div className="mt-3 flex flex-wrap gap-4 text-sm text-gray-600">
+    <p>📍 {studio.location}</p>
+    <p>
+      ⭐ {studio.rating ?? "No rating"}
+      {studio.rating != null && " / 5"}
+    </p>
+  </div>
+</div>
 
         {/* Details */}
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -109,10 +117,9 @@ export default async function StudioDetailsPage({ params }) {
 
             <button
               disabled
-              className="mt-6 w-full rounded-xl bg-pink-500 px-4 py-3 text-sm font-semibold text-white opacity-70"
+              className="mt-6 w-full rounded-xl bg-pink-700 px-4 py-3 text-sm font-semibold text-white "
             >
-              Booking Coming Soon
-            </button>
+Book Workshop Now            </button>
           </aside>
         </div>
 

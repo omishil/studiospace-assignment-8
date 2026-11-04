@@ -1,7 +1,12 @@
 
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-[#fff8fb] px-4 py-10 sm:py-14">
       <div className="w-full max-w-md rounded-2xl border border-pink-100 bg-white p-5 shadow-lg shadow-pink-100/50 sm:p-8">
@@ -37,6 +42,7 @@ export default function LoginPage() {
               type="email"
               id="email"
               name="email"
+              required
               placeholder="Enter your email"
               className="w-full rounded-lg border border-pink-200 bg-pink-50/30 px-3 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
             />
@@ -51,13 +57,24 @@ export default function LoginPage() {
               Password
             </label>
 
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-              className="w-full rounded-lg border border-pink-200 bg-pink-50/30 px-3 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                required
+                placeholder="Enter your password"
+                className="w-full rounded-lg border border-pink-200 bg-pink-50/30 px-3 py-3 pr-16 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-pink-600 transition hover:text-pink-800"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           {/* Forgot Password */}
