@@ -93,7 +93,7 @@ export default async function StudioDetailsPage({ params }) {
                 <p className="mt-1 text-sm text-gray-600">
                   {studio.address}
                 </p>
-              </div>
+                </div>
             )}
           </section>
 

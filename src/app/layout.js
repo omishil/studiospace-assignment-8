@@ -2,7 +2,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/Footer";
-
+import { Toaster } from "sonner";
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -19,7 +19,8 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${poppins.variable} h-full antialiased`}>
       <body className="min-h-full font-[var(--font-poppins)]">
         <Navbar />
-        {children}
+        {children}  <Toaster position="top-right" richColors />
+
         <Footer></Footer>
       </body>
     </html>

@@ -19,5 +19,8 @@ export async function proxy(request) {
 }
 
 export const config = {
-  matcher: ["/add-studio/:path*"],
+  matcher: ["/add-studio/:path*",
+        "/my-listings/:path*",
+
+  ],
 };
