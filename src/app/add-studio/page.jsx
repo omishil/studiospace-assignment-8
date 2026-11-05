@@ -1,13 +1,16 @@
+
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Select,
   SelectContent,
@@ -15,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import {
   Card,
   CardContent,
@@ -57,6 +61,14 @@ const cardClass = "rounded-2xl border-pink-100 shadow-sm";
 export default function AddStudioPage() {
   const [amenities, setAmenities] = useState([]);
   const [category, setCategory] = useState("");
+  const [images, setImages] = useState([]);
+
+  // Get logged-in user's session
+  const { data: session, isPending } = authClient.useSession();
+
+  const hostName = session?.user?.name || "";
+  const hostEmail = session?.user?.email || "";
+  const hostId = session?.user?.id || "";
 
   const handleAmenityChange = (amenity) => {
     setAmenities((prev) =>
@@ -69,24 +81,83 @@ export default function AddStudioPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.target);
-    const studioData = Object.fromEntries(formData.entries());
+    // Check login
+    if (!session?.user) {
+      alert("Please log in before adding a studio.");
+      return;
+    }
 
-    studioData.category = category;
-    studioData.amenities = amenities;
-    studioData.rating = Number(studioData.rating);
+    if (images.length === 0) {
+      alert("Please select at least one studio image.");
+      return;
+    }
 
-    const res = await fetch("http://localhost:5000/add-studio", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(studioData),
-    });
+    try {
+      // Upload multiple images to ImgBB
+      const uploadedImages = [];
 
-    const data = await res.json();
+      for (const image of images) {
+        const imageFormData = new FormData();
+        imageFormData.append("image", image);
 
-    console.log(data);
+        const uploadRes = await fetch(
+          "http://localhost:5000/upload-image",
+          {
+            method: "POST",
+            body: imageFormData,
+          }
+        );
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadRes.ok) {
+          alert("Image upload failed");
+          return;
+        }
+
+        uploadedImages.push(uploadData.imageUrl);
+      }
+
+      // Get original form data
+      const formData = new FormData(e.target);
+      const studioData = Object.fromEntries(formData.entries());
+
+      studioData.category = category;
+      studioData.amenities = amenities;
+      studioData.rating = Number(studioData.rating);
+
+      // Save uploaded image URLs
+      studioData.images = uploadedImages;
+      studioData.image = uploadedImages[0];
+
+      // Save host information
+      studioData.hostName = hostName;
+      studioData.hostEmail = hostEmail;
+      studioData.hostId = hostId;
+
+      // Save studio data to MongoDB
+      const res = await fetch("http://localhost:5000/add-studio", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(studioData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert("Failed to add studio");
+        return;
+      }
+
+      console.log(data);
+      alert("Studio added successfully!");
+
+    } catch (error) {
+      console.error("Error adding studio:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -150,6 +221,7 @@ export default function AddStudioPage() {
                     >
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
+
                     <SelectContent>
                       {categories.map((item) => (
                         <SelectItem key={item} value={item}>
@@ -284,33 +356,39 @@ export default function AddStudioPage() {
             </CardContent>
           </Card>
 
-          {/* Studio Image URL */}
+          {/* Studio Images */}
           <Card className={cardClass}>
             <CardHeader>
               <CardTitle className="text-lg sm:text-xl">
-                Studio Image
+                Studio Images
               </CardTitle>
               <CardDescription>
-                Add an image URL to showcase your creative space.
+                Upload multiple images of your creative space.
               </CardDescription>
             </CardHeader>
 
             <CardContent>
               <div className="space-y-2">
-                <Label htmlFor="image">Studio Image URL *</Label>
+                <Label htmlFor="images">Studio Images *</Label>
+
                 <Input
-                  id="image"
-                  name="image"
-                  type="url"
+                  id="images"
+                  type="file"
+                  accept="image/*"
+                  multiple
                   required
-                  placeholder="https://example.com/studio.jpg"
+                  onChange={(e) =>
+                    setImages(Array.from(e.target.files))
+                  }
                   className={inputClass}
                 />
-              </div>
 
-              <p className="mt-3 text-xs leading-5 text-gray-400">
-                Paste a direct image URL (JPG, PNG, or WEBP).
-              </p>
+                {images.length > 0 && (
+                  <p className="text-xs text-gray-500 sm:text-sm">
+                    {images.length} image(s) selected
+                  </p>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -343,7 +421,9 @@ export default function AddStudioPage() {
                       <Checkbox
                         id={`amenity-${amenity}`}
                         checked={checked}
-                        onCheckedChange={() => handleAmenityChange(amenity)}
+                        onCheckedChange={() =>
+                          handleAmenityChange(amenity)
+                        }
                         className="data-[state=checked]:border-pink-600 data-[state=checked]:bg-pink-600 data-[checked]:border-pink-600 data-[checked]:bg-pink-600"
                       />
                       {amenity}
@@ -383,7 +463,7 @@ export default function AddStudioPage() {
                 Host Information
               </CardTitle>
               <CardDescription>
-                Your account information will appear here.
+                Your account information is added automatically.
               </CardDescription>
             </CardHeader>
 
@@ -393,7 +473,9 @@ export default function AddStudioPage() {
                   <Label htmlFor="hostName">Host Name</Label>
                   <Input
                     id="hostName"
-                    value="Will be connected later"
+                    value={
+                      isPending ? "Loading..." : hostName
+                    }
                     readOnly
                     disabled
                     className="bg-gray-50"
@@ -404,7 +486,9 @@ export default function AddStudioPage() {
                   <Label htmlFor="hostEmail">Host Email</Label>
                   <Input
                     id="hostEmail"
-                    value="Will be connected later"
+                    value={
+                      isPending ? "Loading..." : hostEmail
+                    }
                     readOnly
                     disabled
                     className="bg-gray-50"
@@ -430,6 +514,7 @@ export default function AddStudioPage() {
             <Button
               type="submit"
               size="lg"
+              disabled={isPending || !session?.user}
               className="rounded-xl bg-pink-600 px-8 shadow-lg shadow-pink-200 hover:bg-pink-700"
             >
               Add Studio →

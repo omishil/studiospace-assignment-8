@@ -10,9 +10,8 @@ import { useSession, signOut } from "@/lib/auth-client";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/studios", label: "Explore Studios" },
-  { href: "/how-it-works", label: "How It Works" },
-  { href: "/about", label: "About Us" },
-];
+{ href: "/#howitworks", label: "How It Works" },
+{ href: "/#about", label: "About Us" },];
 
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fff8fb]";

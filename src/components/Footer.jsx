@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 
 export default function Footer() {
@@ -74,18 +73,20 @@ export default function Footer() {
             <Link href="/" className="transition hover:translate-x-1 hover:text-pink-600">
               Home
             </Link>
+
             <Link href="/studios" className="transition hover:translate-x-1 hover:text-pink-600">
               Explore Studios
             </Link>
-            <Link href="#how-it-works" className="transition hover:translate-x-1 hover:text-pink-600">
+
+            <Link href="/how-it-works" className="transition hover:translate-x-1 hover:text-pink-600">
               How It Works
             </Link>
-            <Link href="#about" className="transition hover:translate-x-1 hover:text-pink-600">
+
+            <Link href="/about" className="transition hover:translate-x-1 hover:text-pink-600">
               About Us
             </Link>
-            <Link href="/contact" className="transition hover:translate-x-1 hover:text-pink-600">
-              Contact
-            </Link>
+
+            <p>Contact</p>
           </div>
         </div>
 
@@ -96,21 +97,11 @@ export default function Footer() {
           </h3>
 
           <div className="mt-5 flex flex-col gap-3 text-sm text-pink-800">
-            <Link href="/studios/photography" className="transition hover:translate-x-1 hover:text-pink-600">
-              Photography Studios
-            </Link>
-            <Link href="/studios/music" className="transition hover:translate-x-1 hover:text-pink-600">
-              Music Studios
-            </Link>
-            <Link href="/studios/film" className="transition hover:translate-x-1 hover:text-pink-600">
-              Film Studios
-            </Link>
-            <Link href="/studios/art" className="transition hover:translate-x-1 hover:text-pink-600">
-              Art Studios
-            </Link>
-            <Link href="/studios/podcast" className="transition hover:translate-x-1 hover:text-pink-600">
-              Podcast Studios
-            </Link>
+            <p>Photography Studios</p>
+            <p>Music Studios</p>
+            <p>Film Studios</p>
+            <p>Art Studios</p>
+            <p>Podcast Studios</p>
           </div>
         </div>
       </div>
@@ -126,6 +117,7 @@ export default function Footer() {
             <Link href="/terms" className="transition hover:text-pink-600">
               Terms & Conditions
             </Link>
+
             <Link href="/privacy" className="transition hover:text-pink-600">
               Privacy Policy
             </Link>
