@@ -29,8 +29,7 @@ const slides = [
     primaryText: "Explore Studios",
     primaryLink: "/studios",
     secondaryText: "How It Works",
-    secondaryLink: "/how-it-works",
-  },
+secondaryLink: "/#howitworks",  },
   {
     id: 2,
     subtitle: "MAKE SOMETHING AMAZING",
@@ -41,7 +40,7 @@ const slides = [
     primaryText: "Discover Studios",
     primaryLink: "/studios",
     secondaryText: "How It Works",
-    secondaryLink: "/how-it-works",
+    secondaryLink: "/#howitworks",
   },
   {
     id: 3,
@@ -51,9 +50,9 @@ const slides = [
       "Share your creative space with a community of creators and turn your studio into an opportunity.",
     image: "/professional-studio-background_1036687-3915.avif",
     primaryText: "Post Your Space",
-    primaryLink: "/studios/new",
+    primaryLink: "/add-studio",
     secondaryText: "Explore Studios",
-    secondaryLink: "/studios",
+    secondaryLink: "/#howitworks",
   },
 ];
 

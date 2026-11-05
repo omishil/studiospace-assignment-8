@@ -457,47 +457,42 @@ export default function AddStudioPage() {
           </Card>
 
           {/* Host Information */}
-          <Card className={cardClass}>
-            <CardHeader>
-              <CardTitle className="text-lg sm:text-xl">
-                Host Information
-              </CardTitle>
-              <CardDescription>
-                Your account information is added automatically.
-              </CardDescription>
-            </CardHeader>
+        <Card className={`${cardClass} border-amber-300 bg-amber-50/70`}>
+  <CardHeader>
+    <CardTitle className="text-lg text-amber-900 sm:text-xl">
+      Host Information
+    </CardTitle>
+    <CardDescription className="text-amber-800/80">
+      Your account information is added automatically.
+    </CardDescription>
+  </CardHeader>
 
-            <CardContent>
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="hostName">Host Name</Label>
-                  <Input
-                    id="hostName"
-                    value={
-                      isPending ? "Loading..." : hostName
-                    }
-                    readOnly
-                    disabled
-                    className="bg-gray-50"
-                  />
-                </div>
+  <CardContent>
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div className="space-y-2">
+        <Label htmlFor="hostName">Host Name</Label>
+        <Input
+          id="hostName"
+          value={isPending ? "Loading..." : hostName}
+          readOnly
+          disabled
+          className="border-amber-200 bg-white"
+        />
+      </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="hostEmail">Host Email</Label>
-                  <Input
-                    id="hostEmail"
-                    value={
-                      isPending ? "Loading..." : hostEmail
-                    }
-                    readOnly
-                    disabled
-                    className="bg-gray-50"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
+      <div className="space-y-2">
+        <Label htmlFor="hostEmail">Host Email</Label>
+        <Input
+          id="hostEmail"
+          value={isPending ? "Loading..." : hostEmail}
+          readOnly
+          disabled
+          className="border-amber-200 bg-white"
+        />
+      </div>
+    </div>
+  </CardContent>
+</Card>
           {/* Submit Buttons */}
           <div className="flex flex-col-reverse gap-3 pb-6 sm:flex-row sm:justify-end">
             <Link
