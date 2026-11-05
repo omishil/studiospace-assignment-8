@@ -1,7 +1,7 @@
 import Link from "next/link";
 import EditDialog from "../../../components/EditDialog";
 import StudioImageSlider from "../../../components/StudioImageSlider";
-
+import BookingDialog from "../../../components/BookingDialog";
 export default async function StudioDetailsPage({ params }) {
   const { id } = await params;
 
@@ -40,7 +40,7 @@ export default async function StudioDetailsPage({ params }) {
             </h1>
 
             {/* Edit Button */}
-            <EditDialog studio={studio} studioId={id} />
+            {/* <EditDialog studio={studio} studioId={id} /> */}
           </div>
 
           <div className="mt-3 flex flex-wrap gap-4 text-sm text-gray-600">
@@ -117,12 +117,7 @@ export default async function StudioDetailsPage({ params }) {
               </span>
             </div>
 
-            <button
-              disabled
-              className="mt-6 w-full rounded-xl bg-pink-700 px-4 py-3 text-sm font-semibold text-white"
-            >
-              Book Workshop Now
-            </button>
+         <BookingDialog studio={studio} />
           </aside>
         </div>
 
