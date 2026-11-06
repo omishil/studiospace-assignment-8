@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { authClient } from "@/lib/auth-client";
 
 import {
   Select,
@@ -75,19 +76,30 @@ export default function UpdateStudioPage() {
   useEffect(() => {
     const fetchStudio = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5000/studios/${id}`
-        );
+     const { data, error } = await authClient.token();
+const token = data?.token;
 
+if (error || !token) {
+  throw new Error("Authentication failed. Please log in again.");
+}
+
+const res = await fetch(
+  `http://localhost:5000/studios/${id}`,
+  {
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  }
+);
         if (!res.ok) {
           throw new Error("Failed to fetch studio");
         }
 
-        const data = await res.json();
+        const result = await res.json();
 
-        setStudio(data);
-        setCategory(data.category || "");
-        setAmenities(data.amenities || []);
+        setStudio(result);
+        setCategory(result.category || "");
+        setAmenities(result.amenities || []);
       } catch (error) {
         console.error(error);
         toast.error("Could not load studio information.");
@@ -178,17 +190,26 @@ export default function UpdateStudioPage() {
       updatedStudio.image = finalImages[0] || "";
 
       // Update MongoDB
-      const res = await fetch(
-        `http://localhost:5000/studios/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedStudio),
-        }
-      );
+      // Get JWT token
+const { data, error } = await authClient.token();
+const token = data?.token;
 
+if (error || !token) {
+  throw new Error("Authentication failed. Please log in again.");
+}
+
+// Update MongoDB
+const res = await fetch(
+  `http://localhost:5000/studios/${id}`,
+  {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updatedStudio),
+  }
+);
       if (!res.ok) {
         throw new Error("Failed to update studio");
       }

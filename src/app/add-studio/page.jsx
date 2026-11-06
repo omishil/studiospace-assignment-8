@@ -80,6 +80,13 @@ export default function AddStudioPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+// token retrieve 
+const {data,error} = await authClient.token()
+// console.log(data);
+const token= data?.token
+
+
+
 
     // Check login
     if (!session?.user) {
@@ -140,18 +147,19 @@ export default function AddStudioPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          authorization: `bearer ${token}`
         },
         body: JSON.stringify(studioData),
       });
 
-      const data = await res.json();
+      const result = await res.json();
 
       if (!res.ok) {
         alert("Failed to add studio");
         return;
       }
 
-      console.log(data);
+      console.log(result);
       alert("Studio added successfully!");
 
     } catch (error) {

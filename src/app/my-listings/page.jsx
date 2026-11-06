@@ -3,19 +3,20 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useSession } from "@/lib/auth-client";
-import EditDialog from "@/components/EditDialog";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-export default function MyListingsPage() {
-    const router = useRouter();
+import { useRouter } from "next/navigation";
+import { authClient, useSession } from "@/lib/auth-client";
 
+export default function MyListingsPage() {
+  const router = useRouter();
   const { data: session, isPending } = useSession();
 
   const [studios, setStudios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-const [deletingId, setDeletingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+
+  // Fetch user's studio listings
   useEffect(() => {
     const fetchMyListings = async () => {
       if (isPending) return;
@@ -53,11 +54,55 @@ const [deletingId, setDeletingId] = useState(null);
     fetchMyListings();
   }, [session, isPending]);
 
+  // Delete studio
+  const handleDelete = async (id) => {
+    try {
+      setDeletingId(id);
+      setError("");
+
+      const { data, error: tokenError } = await authClient.token();
+      const token = data?.token;
+
+      if (tokenError || !token) {
+        throw new Error("Authentication failed. Please log in again.");
+      }
+
+      const email = encodeURIComponent(session.user.email);
+
+      const response = await fetch(
+        `http://localhost:5000/studios/${id}?email=${email}`,
+        {
+          method: "DELETE",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to delete studio.");
+      }
+
+      setStudios((currentStudios) =>
+        currentStudios.filter((studio) => studio._id !== id)
+      );
+
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      setError(error.message || "Something went wrong while deleting the studio.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   // Loading state
   if (isPending || loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-gray-500 sm:text-base">
+      <div className="flex min-h-[60vh] items-center justify-center px-3">
+        <p className="text-xs text-gray-500 sm:text-sm">
           Loading your listings...
         </p>
       </div>
@@ -67,202 +112,176 @@ const [deletingId, setDeletingId] = useState(null);
   // Logged-out state
   if (!session?.user) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <h2 className="text-xl font-bold text-gray-800">
-          Please log in
-        </h2>
+      <main className="flex min-h-[60vh] items-center justify-center px-3">
+        <div className="w-full max-w-md rounded-xl border border-pink-100 bg-white p-5 text-center shadow-sm sm:p-8">
+          <h2 className="text-lg font-bold text-gray-800 sm:text-xl">
+            Please log in
+          </h2>
 
-        <p className="mt-2 text-sm text-gray-500">
-          Log in to view your studio listings.
-        </p>
-      </div>
+          <p className="mt-2 text-xs text-gray-500 sm:text-sm">
+            Log in to view your studio listings.
+          </p>
+
+          <Link
+            href="/login"
+            className="mt-5 inline-block rounded-lg bg-pink-600 px-5 py-2 text-xs font-semibold text-white transition hover:bg-pink-700 sm:text-sm"
+          >
+            Log In
+          </Link>
+        </div>
+      </main>
     );
   }
-// delete functionality
-
-const handleDelete = async (id) => {
-  try {
-    setDeletingId(id);
-    setError("");
-
-    const email = encodeURIComponent(session.user.email);
-
-    const response = await fetch(
-      `http://localhost:5000/studios/${id}?email=${email}`,
-      {
-        method: "DELETE",
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      setStudios((currentStudios) =>
-        currentStudios.filter((studio) => studio._id !== id)
-      );
-
-      router.refresh();
-    } else {
-      setError(data.message || "Failed to delete studio.");
-    }
-  } catch (error) {
-    console.error(error);
-    setError("Something went wrong while deleting the studio.");
-  } finally {
-    setDeletingId(null);
-  }
-};
-
 
   return (
-    <main className="min-h-screen bg-[#fff8fb] px-3 py-8 sm:px-6 sm:py-12">
+    <main className="min-h-screen bg-[#fff8fb] px-3 py-6 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <div className="mx-auto max-w-7xl">
 
         {/* Page heading */}
         <div className="mb-6 sm:mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-pink-600 sm:text-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-pink-600 sm:text-xs md:text-sm">
             Host Dashboard
           </p>
 
-          <h1 className="mt-2 text-2xl font-bold text-gray-900 sm:text-3xl">
+          <h1 className="mt-1.5 text-xl font-bold text-gray-900 sm:mt-2 sm:text-2xl md:text-3xl">
             My Studio Listings
           </h1>
 
-          <p className="mt-2 text-sm text-gray-500 sm:text-base">
-            View all the studios you have listed on StudioSpace.
+          <p className="mt-2 max-w-xl text-xs leading-relaxed text-gray-500 sm:text-sm md:text-base">
+            View and manage all the studios you have listed on StudioSpace.
           </p>
         </div>
 
         {/* Listing count */}
-        <div className="mb-5 rounded-xl border border-pink-100 bg-white p-4 shadow-sm sm:mb-6 sm:p-5">
-          <p className="text-sm text-gray-500">
+        <div className="mb-5 rounded-xl border border-pink-100 bg-white p-3 shadow-sm sm:mb-7 sm:p-5">
+          <p className="text-xs text-gray-500 sm:text-sm">
             Total Listed Studios
           </p>
 
-          <p className="mt-1 text-2xl font-bold text-pink-600">
+          <p className="mt-1 text-xl font-bold text-pink-600 sm:text-2xl">
             {studios.length}
           </p>
         </div>
 
         {/* Error message */}
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+          <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-600 sm:p-4 sm:text-sm">
             {error}
           </div>
         )}
 
         {/* Empty state */}
         {!error && studios.length === 0 && (
-          <div className="rounded-xl border border-pink-100 bg-white px-4 py-12 text-center shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800">
+          <div className="rounded-xl border border-pink-100 bg-white px-4 py-10 text-center shadow-sm sm:py-14">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-pink-50 text-xl text-pink-500 sm:h-14 sm:w-14 sm:text-2xl">
+              +
+            </div>
+
+            <h2 className="mt-4 text-base font-semibold text-gray-800 sm:text-lg">
               No studio listings yet
             </h2>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-gray-500 sm:text-sm">
               Your studios will appear here after you list them.
             </p>
+
+            <Link
+              href="/add-studio"
+              className="mt-5 inline-block rounded-lg bg-pink-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-pink-700 sm:text-sm"
+            >
+              Add a Studio
+            </Link>
           </div>
         )}
 
-        {/* Studio table */}
+        {/* Studio cards */}
         {studios.length > 0 && (
-          <div className="overflow-x-auto rounded-xl border border-pink-100 bg-white shadow-sm">
-            <table className="w-full min-w-[650px] text-left">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
 
-              {/* Table heading */}
-              <thead className="bg-pink-50 text-xs uppercase text-gray-600 sm:text-sm">
-                <tr>
-                  <th className="px-4 py-4">
-                    Studio Details
-                  </th>
+            {studios.map((studio) => (
+              <article
+                key={studio._id}
+                className="overflow-hidden rounded-xl border border-pink-100 bg-white shadow-sm transition hover:shadow-md sm:rounded-2xl"
+              >
+                {/* Studio image */}
+                <Link
+                  href={`/studios/${studio._id}`}
+                  className="group relative block aspect-[16/9] overflow-hidden bg-pink-50"
+                >
+                  {studio.image || studio.images?.[0] ? (
+                    <Image
+                      src={studio.image || studio.images[0]}
+                      alt={studio.name || studio.title || "Studio"}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                      className="object-cover transition duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-xs text-pink-500 sm:text-sm">
+                      No Image Available
+                    </div>
+                  )}
+                </Link>
 
-                  <th className="px-4 py-4 text-right">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
+                {/* Studio information */}
+                <div className="p-3 sm:p-4 md:p-5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <Link
+                        href={`/studios/${studio._id}`}
+                        className="line-clamp-1 text-sm font-semibold text-gray-800 transition hover:text-pink-600 sm:text-base"
+                      >
+                        {studio.name || studio.title || "Untitled Studio"}
+                      </Link>
 
-              {/* Studio data */}
-              <tbody className="divide-y divide-gray-100">
-                {studios.map((studio) => (
-                  <tr
-                    key={studio._id}
-                    className="transition hover:bg-pink-50/40"
-                  >
+                      <p className="mt-1 text-[11px] text-gray-500 sm:text-xs">
+                        {studio.category || "N/A"}
+                      </p>
+                    </div>
 
-                    {/* Studio information */}
-                   
-<td className="px-4 py-4">
-  <a
-    href={`/studios/${studio._id}`}
-    className="group flex items-center gap-3"
-  >
-    {studio.image || studio.images?.[0] ? (
-      <Image
-        src={studio.image || studio.images[0]}
-        alt={studio.name || "Studio"}
-        width={56}
-        height={56}
-        className="h-12 w-12 rounded-lg object-cover transition group-hover:opacity-80 sm:h-14 sm:w-14"
-      />
-    ) : (
-      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-pink-100 text-xs text-pink-600">
-        No Image
-      </div>
-    )}
+                    <span className="shrink-0 rounded-lg bg-pink-50 px-2 py-1 text-[10px] font-semibold text-pink-600 sm:text-xs">
+                      Listed
+                    </span>
+                  </div>
 
-    <div>
-      <p className="text-sm font-semibold text-gray-800 transition group-hover:text-pink-600 sm:text-base">
-        {studio.name || studio.title || "Untitled Studio"}
-      </p>
+                  {/* Price */}
+                  <div className="mt-3 border-t border-gray-100 pt-3">
+                    <p className="text-[10px] text-gray-500 sm:text-xs">
+                      Hourly Rate
+                    </p>
 
-      <p className="mt-1 text-xs text-gray-500 sm:text-sm">
-        {studio.category || "N/A"} • $
-        {studio.price || studio.hourlyRate || "N/A"}/hr
-      </p>
+                    <p className="mt-0.5 text-base font-bold text-gray-900 sm:text-lg">
+                      ${studio.price || studio.hourlyRate || "N/A"}
+                      <span className="text-[10px] font-normal text-gray-500 sm:text-xs">
+                        {" "}/ hour
+                      </span>
+                    </p>
+                  </div>
 
-      <p className="mt-1 text-xs text-pink-600">
-        View studio details →
-      </p>
-    </div>
-  </a>
-</td>
+                  {/* Action buttons */}
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <Link
+                      href={`/studios/edit/${studio._id}`}
+                      className="rounded-lg bg-blue-50 px-3 py-2 text-center text-xs font-semibold text-blue-600 transition hover:bg-blue-100 sm:py-2.5 sm:text-sm"
+                    >
+                      Update
+                    </Link>
 
-                    {/* Action buttons */}
-                    <td className="px-4 py-4">
-                      <div className="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(studio._id)}
+                      disabled={deletingId === studio._id}
+                      className="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 sm:py-2.5 sm:text-sm"
+                    >
+                      {deletingId === studio._id ? "Deleting..." : "Delete"}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
 
-                      <EditDialog
-  studio={studio}
-  userEmail={session.user.email}
-  triggerLabel="Update"
-/>
-
-                     <button
-  type="button"
-  onClick={() => handleDelete(studio._id)}
-  disabled={deletingId === studio._id}
-  className="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
->
-  {deletingId === studio._id ? "Deleting..." : "Delete"}
-</button>
-<Link
-  href={`/studios/edit/${studio._id}`}
-  className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-100 sm:text-sm"
->
-  new up
-</Link>
-                        
-                      </div>
-                    </td>
-
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
-
       </div>
     </main>
   );

@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
-
-import {
+import { useSession, authClient } from "@/lib/auth-client";import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -45,6 +43,10 @@ export default function BookingDialog({ studio }) {
   const totalPrice = calculatePrice();
 
   const handleBooking = async (e) => {
+
+
+
+
     e.preventDefault();
 
     if (!session?.user) {
@@ -69,11 +71,19 @@ export default function BookingDialog({ studio }) {
 
     try {
       setLoading(true);
+ // Get JWT token
+  const { data, error } = await authClient.token();
+  const token = data?.token;
+if (error || !token) {
+    throw new Error("Authentication failed. Please sign in again.");
+  }
 
       const response = await fetch("http://localhost:5000/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+
         },
         body: JSON.stringify({
           studioId: studio._id,
@@ -85,10 +95,10 @@ export default function BookingDialog({ studio }) {
         }),
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Booking failed");
+        throw new Error(result.message || "Booking failed");
       }
 
       toast.success("Booking submitted successfully!");

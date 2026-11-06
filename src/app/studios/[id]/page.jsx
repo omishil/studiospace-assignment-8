@@ -2,10 +2,26 @@ import Link from "next/link";
 import EditDialog from "../../../components/EditDialog";
 import StudioImageSlider from "../../../components/StudioImageSlider";
 import BookingDialog from "../../../components/BookingDialog";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 export default async function StudioDetailsPage({ params }) {
-  const { id } = await params;
 
-  const res = await fetch(`http://localhost:5000/studios/${id}`);
+
+
+  const { id } = await params;
+// jwt token access
+const jwtToken = await auth.api.getToken({
+  headers: await headers()
+})
+console.log(jwtToken.token);
+
+
+
+  const res = await fetch(`http://localhost:5000/studios/${id}`,{
+    headers:{
+      authorization: `bearer ${jwtToken.token}`
+    }
+  });
   const studio = await res.json();
 
   // Support both new multiple images and older single-image records
