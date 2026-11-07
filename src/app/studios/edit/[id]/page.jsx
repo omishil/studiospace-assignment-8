@@ -12,7 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Spinner } from "@/components/ui/spinner";
+import BrandedLoader from "@/components/BrandedLoader";
 import { authClient } from "@/lib/auth-client";
+import { STUDIO_CATEGORY_VALUES } from "@/lib/categories";
 
 import {
   Select,
@@ -30,16 +33,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const categories = [
-  "Photo Studio",
-  "Film Stage",
-  "Podcast Lounge",
-  "Music Suite",
-  "Workshop",
-  "Sound Stage",
-  "Art Studio",
-  "Other",
-];
+const categories = STUDIO_CATEGORY_VALUES;
 
 const availableAmenities = [
   "Wi-Fi",
@@ -128,6 +122,7 @@ const res = await fetch(
 
     try {
       setSaving(true);
+      toast.loading("Saving your changes...", { id: "edit-studio" });
 
       const formData = new FormData(e.target);
       const updatedStudio = Object.fromEntries(
@@ -214,14 +209,16 @@ const res = await fetch(
         throw new Error("Failed to update studio");
       }
 
-      toast.success("Studio updated successfully!");
+      toast.success("Studio updated successfully!", { id: "edit-studio" });
 
       setTimeout(() => {
         router.push("/my-listings");
       }, 600);
     } catch (error) {
       console.error("Update error:", error);
-      toast.error(error.message || "Something went wrong.");
+      toast.error(error.message || "Something went wrong.", {
+        id: "edit-studio",
+      });
     } finally {
       setSaving(false);
     }
@@ -229,11 +226,9 @@ const res = await fetch(
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-gray-500">
-          Loading studio information...
-        </p>
-      </div>
+      <main className="min-h-screen bg-[#fff8fb]">
+        <BrandedLoader label="Loading studio information..." />
+      </main>
     );
   }
 
@@ -647,7 +642,14 @@ const res = await fetch(
               disabled={saving}
               className="rounded-xl bg-pink-600 px-8 shadow-lg shadow-pink-200 hover:bg-pink-700"
             >
-              {saving ? "Updating..." : "Save Changes →"}
+              {saving ? (
+                <>
+                  <Spinner className="size-4" />
+                  Updating...
+                </>
+              ) : (
+                "Save Changes →"
+              )}
             </Button>
           </div>
 

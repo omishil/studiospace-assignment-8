@@ -2,15 +2,30 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 export default function LoginPage() {
-  const router = useRouter();
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[80vh] items-center justify-center bg-[#fff8fb] px-4">
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const searchParams = useSearchParams();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const callbackUrl = searchParams.get("callbackUrl");
 
@@ -19,11 +34,14 @@ export default function LoginPage() {
       ? callbackUrl
       : "/";
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const formData = new FormData(e.target);
-    const loginData = Object.fromEntries(formData.entries());
+  const formData = new FormData(e.target);
+  const loginData = Object.fromEntries(formData.entries());
+
+  try {
+    setIsSubmitting(true);
 
     const { data, error } = await authClient.signIn.email({
       email: loginData.email,
@@ -31,12 +49,32 @@ export default function LoginPage() {
     });
 
     if (error) {
-      console.log(error.message);
+      toast.error(error.message || "Login failed. Please try again.");
+      setIsSubmitting(false);
       return;
     }
 
-    router.push(redirectUrl);
-  };
+    toast.success("Login successful! Welcome back.");
+
+    // Full navigation so the fresh session cookie is sent to the proxy.
+    setTimeout(() => {
+      window.location.assign(redirectUrl);
+    }, 600);
+  } catch (error) {
+    toast.error("Something went wrong. Please try again.");
+    setIsSubmitting(false);
+  }
+};
+const handleGoogleSignIn = async () => {
+  const { error } = await authClient.signIn.social({
+    provider: "google",
+    callbackURL: redirectUrl,
+  });
+
+  if (error) {
+    toast.error(error.message || "Google sign-in failed. Please try again.");
+  }
+};
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-[#fff8fb] px-4 py-10 sm:py-14">
@@ -121,9 +159,17 @@ export default function LoginPage() {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-pink-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700 active:scale-[0.99]"
+            disabled={isSubmitting}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-pink-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Login
+            {isSubmitting ? (
+              <>
+                <Spinner className="size-4" />
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
 
@@ -136,6 +182,7 @@ export default function LoginPage() {
 
         {/* Google Login */}
         <button
+        onClick={handleGoogleSignIn}
           type="button"
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
         >
@@ -167,7 +214,7 @@ export default function LoginPage() {
 
         {/* Register Link */}
         <p className="mt-7 text-center text-xs text-gray-500 sm:text-sm">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="font-semibold text-pink-600 transition hover:text-pink-800"

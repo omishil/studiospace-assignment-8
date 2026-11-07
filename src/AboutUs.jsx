@@ -5,7 +5,7 @@ export default function AboutUs() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-gradient-to-br from-rose-50 via-white to-pink-50 px-4 py-14 sm:px-6 sm:py-20"
+      className="relative scroll-mt-20 overflow-hidden bg-gradient-to-br from-rose-50 via-white to-pink-50 px-4 py-14 sm:px-6 sm:py-20"
     >
       {/* Soft background shapes (these give the glass something to blur) */}
       <div

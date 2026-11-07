@@ -2,6 +2,16 @@
 const nextConfig = {
   reactCompiler: true,
 
+  async redirects() {
+    return [
+      {
+        source: "/bookings",
+        destination: "/my-bookings",
+        permanent: false,
+      },
+    ];
+  },
+
   images: {
     remotePatterns: [
       {

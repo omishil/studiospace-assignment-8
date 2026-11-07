@@ -234,3 +234,161 @@
     height: 8px;
   }
 }
+/* ==========================================================================
+   Dark theme compatibility layer
+   Bridges the app's hardcoded light utility classes into the .dark palette.
+   ========================================================================== */
+.dark {
+  color-scheme: dark;
+}
+
+/* Page + surface backgrounds */
+.dark body,
+.dark [class*="bg-[#fff8fb]"] {
+  background-color: #140d12;
+}
+
+.dark .bg-white,
+.dark [class*="bg-white/"] {
+  background-color: #1e151a;
+}
+
+.dark .bg-gray-50 {
+  background-color: #241a20;
+}
+
+.dark .bg-gray-100 {
+  background-color: #2a1f26;
+}
+
+.dark .bg-gray-200 {
+  background-color: #3a2a33;
+}
+
+/* Pink surfaces */
+.dark .bg-pink-50,
+.dark [class*="bg-pink-50/"] {
+  background-color: #2a1a22;
+}
+
+.dark .bg-pink-100 {
+  background-color: #3a2130;
+}
+
+.dark .bg-pink-200 {
+  background-color: #4a2a3a;
+}
+
+/* Text */
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700 {
+  color: #f6eef2;
+}
+
+.dark .text-gray-600,
+.dark .text-gray-500,
+.dark .text-gray-400 {
+  color: #c9b6c1;
+}
+
+.dark .text-pink-950,
+.dark .text-pink-900 {
+  color: #ffe4ef;
+}
+
+.dark .text-pink-800,
+.dark .text-pink-700 {
+  color: #f9c6db;
+}
+
+/* Borders */
+.dark .border-pink-100,
+.dark .border-pink-200,
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: #3a2732;
+}
+
+/* Status colours */
+.dark .bg-yellow-100 {
+  background-color: #3a2f12;
+}
+.dark .text-yellow-700 {
+  color: #fde68a;
+}
+
+.dark .bg-green-100 {
+  background-color: #16301f;
+}
+.dark .text-green-700 {
+  color: #86efac;
+}
+
+.dark .bg-blue-100,
+.dark .bg-blue-50 {
+  background-color: #16202e;
+}
+.dark .text-blue-600,
+.dark .text-blue-700 {
+  color: #93c5fd;
+}
+
+.dark .bg-red-100,
+.dark .bg-red-50 {
+  background-color: #2a1618;
+}
+.dark .text-red-600,
+.dark .text-red-700 {
+  color: #fda4af;
+}
+
+/* Amber host card */
+.dark [class*="bg-amber-50"] {
+  background-color: #2a2118;
+}
+.dark .border-amber-200,
+.dark .border-amber-300 {
+  border-color: #6b5424;
+}
+.dark .text-amber-900 {
+  color: #f3d9a4;
+}
+.dark [class*="text-amber-800"] {
+  color: #e8cf9a;
+}
+
+/* Placeholders */
+.dark .placeholder\:text-gray-400::placeholder {
+  color: #9c8791;
+}
+
+/* Hover states */
+.dark .hover\:bg-pink-50:hover {
+  background-color: #2a1a22;
+}
+.dark .hover\:bg-blue-100:hover {
+  background-color: #1d2b3d;
+}
+.dark .hover\:bg-red-50:hover,
+.dark .hover\:bg-red-100:hover {
+  background-color: #361a1e;
+}
+
+/* Gradient sections (HowItWorks / AboutUs / hero cards) */
+.dark [class*="from-pink-50"],
+.dark [class*="from-rose-50"] {
+  background-image: linear-gradient(to bottom right, #1c1118, #140d12, #22131b);
+}
+
+/* Footer */
+.dark footer {
+  background-color: #1a1015;
+  color: #f9d7e5;
+  border-color: #3a2732;
+}
+
+/* Softer pink shadows in the dark */
+.dark [class*="shadow-pink"] {
+  --tw-shadow-color: rgba(236, 72, 153, 0.18);
+}

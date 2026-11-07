@@ -4,20 +4,49 @@
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
+import EmptyState from "@/components/EmptyState";
+import BrandedLoader from "@/components/BrandedLoader";
 
 export default function MyBookingsPage() {
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
+  const [uiStatuses, setUiStatuses] = useState({});
 
   const customerEmail = session?.user?.email;
+
+  // Demo-only status shown in the UI. Nothing is persisted to MongoDB.
+  const getDisplayStatus = (booking) =>
+    booking.status === "Cancelled"
+      ? "Cancelled"
+      : uiStatuses[booking._id] || "Pending";
+
+  const handleStatusChange = (bookingId, value) => {
+    setUiStatuses((previous) => {
+      const next = { ...previous };
+
+      if (value === "Pending") {
+        delete next[bookingId];
+      } else {
+        next[bookingId] = value;
+      }
+
+      return next;
+    });
+
+    toast.success(
+      value === "Pending"
+        ? "Booking status reset to Pending."
+        : `Booking marked as ${value}.`,
+      { id: `status-${bookingId}` }
+    );
+  };
 
   // Fetch customer bookings
   useEffect(() => {
     if (!customerEmail) {
-      setLoading(false);
       return;
     }
 
@@ -36,7 +65,7 @@ export default function MyBookingsPage() {
         const data = await response.json();
         setBookings(data);
       } catch (error) {
-        toast.error(error.message);
+        toast.error(error.message || "Could not load your bookings.");
       } finally {
         setLoading(false);
       }
@@ -69,6 +98,7 @@ export default function MyBookingsPage() {
   const handleCancelBooking = async (bookingId) => {
     try {
       setCancellingId(bookingId);
+      toast.loading("Cancelling your booking...", { id: "cancel-booking" });
 
       const response = await fetch(
         `http://localhost:5000/bookings/${bookingId}/cancel`,
@@ -98,21 +128,29 @@ export default function MyBookingsPage() {
         )
       );
 
-      toast.success("Booking cancelled successfully!");
+      setUiStatuses((previous) => {
+        const next = { ...previous };
+        delete next[bookingId];
+        return next;
+      });
+
+      toast.success("Booking cancelled successfully!", {
+        id: "cancel-booking",
+      });
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Could not cancel booking.", {
+        id: "cancel-booking",
+      });
     } finally {
       setCancellingId(null);
     }
   };
 
   // Loading state
-  if (loading) {
+  if (isPending || (customerEmail && loading)) {
     return (
-      <main className="min-h-screen bg-[#fff8fb] px-4 py-12 text-center">
-        <p className="text-sm text-gray-600">
-          Loading your bookings...
-        </p>
+      <main className="min-h-screen bg-[#fff8fb]">
+        <BrandedLoader label="Loading your bookings..." />
       </main>
     );
   }
@@ -159,15 +197,13 @@ export default function MyBookingsPage() {
 
         {/* Empty State */}
         {bookings.length === 0 ? (
-          <div className="rounded-2xl border border-pink-100 bg-white px-4 py-12 text-center sm:py-16">
-            <h2 className="text-base font-bold text-gray-900 sm:text-lg">
-              No bookings yet
-            </h2>
-
-            <p className="mt-2 text-xs text-gray-500 sm:text-sm">
-              Your studio reservations will appear here.
-            </p>
-          </div>
+          <EmptyState
+            icon="📅"
+            title="No bookings yet"
+            description="Your studio reservations will appear here. Find a creative space and book your next session."
+            actionHref="/studios"
+            actionLabel="Browse Studios"
+          />
         ) : (
 
           /* Booking Cards */
@@ -185,18 +221,31 @@ export default function MyBookingsPage() {
                     <h2 className="text-base font-bold text-gray-900 sm:text-lg">
                       {booking.studioTitle}
                     </h2>
-
-                    <p className="mt-1 break-all text-[10px] text-gray-500 sm:text-xs">
-                      Booking ID: {booking._id}
-                    </p>
                   </div>
 
-                  {/* Status Badge */}
-                  <span
-                    className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-semibold sm:text-xs ${getStatusStyle(booking.status)}`}
-                  >
-                    {booking.status}
-                  </span>
+                  {/* Status Badge + demo dropdown */}
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    <span
+                      className={`rounded-full px-3 py-1 text-[10px] font-semibold sm:text-xs ${getStatusStyle(getDisplayStatus(booking))}`}
+                    >
+                      {getDisplayStatus(booking)}
+                    </span>
+
+                    {getDisplayStatus(booking) !== "Cancelled" && (
+                      <select
+                        value={getDisplayStatus(booking)}
+                        onChange={(event) =>
+                          handleStatusChange(booking._id, event.target.value)
+                        }
+                        aria-label={`Update status for ${booking.studioTitle} (demo only)`}
+                        className="rounded-full border border-pink-200 bg-white px-2 py-1 text-[10px] font-semibold text-gray-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100 dark:border-pink-900/60 dark:bg-[#241820] dark:text-pink-100 sm:text-xs"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                    )}
+                  </div>
 
                 </div>
 
@@ -248,7 +297,7 @@ export default function MyBookingsPage() {
                 </div>
 
                 {/* Cancel Booking Button */}
-                {booking.status === "Pending" && (
+                {getDisplayStatus(booking) === "Pending" && (
                   <button
                     onClick={() => handleCancelBooking(booking._id)}
                     disabled={cancellingId === booking._id}

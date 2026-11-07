@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useSession, authClient } from "@/lib/auth-client";import {
+import { useSession, authClient } from "@/lib/auth-client";
+import { Spinner } from "@/components/ui/spinner";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -13,6 +16,7 @@ import { useSession, authClient } from "@/lib/auth-client";import {
 } from "@/components/ui/dialog";
 
 export default function BookingDialog({ studio }) {
+  const router = useRouter();
   const { data: session } = useSession();
 
   const [open, setOpen] = useState(false);
@@ -71,6 +75,7 @@ export default function BookingDialog({ studio }) {
 
     try {
       setLoading(true);
+      toast.loading("Submitting your booking...", { id: "booking" });
  // Get JWT token
   const { data, error } = await authClient.token();
   const token = data?.token;
@@ -101,14 +106,17 @@ if (error || !token) {
         throw new Error(result.message || "Booking failed");
       }
 
-      toast.success("Booking submitted successfully!");
+      toast.success("Booking submitted successfully!", { id: "booking" });
 
       setOpen(false);
       setBookingDate("");
       setStartTime("");
       setEndTime("");
+
+      router.push("/my-bookings");
+      router.refresh();
     } catch (error) {
-      toast.error(error.message || "Something went wrong.");
+      toast.error(error.message || "Something went wrong.", { id: "booking" });
     } finally {
       setLoading(false);
     }
@@ -210,9 +218,16 @@ if (error || !token) {
             <button
               type="submit"
               disabled={loading || !session?.user || totalPrice <= 0}
-              className="w-full rounded-xl bg-pink-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-pink-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Submitting..." : "Confirm Booking"}
+              {loading ? (
+                <>
+                  <Spinner className="size-4" />
+                  Submitting...
+                </>
+              ) : (
+                "Confirm Booking"
+              )}
             </button>
           </DialogFooter>
         </form>

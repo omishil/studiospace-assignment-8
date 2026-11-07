@@ -6,6 +6,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient, useSession } from "@/lib/auth-client";
+import { toast } from "sonner";
+import EmptyState from "@/components/EmptyState";
+import StudioSkeleton from "@/components/StudioSkeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function MyListingsPage() {
   const router = useRouter();
@@ -15,6 +25,7 @@ export default function MyListingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   // Fetch user's studio listings
   useEffect(() => {
@@ -54,11 +65,16 @@ export default function MyListingsPage() {
     fetchMyListings();
   }, [session, isPending]);
 
-  // Delete studio
-  const handleDelete = async (id) => {
+  // Delete studio (confirmed from the modal)
+  const handleDelete = async () => {
+    if (!pendingDelete) return;
+
+    const id = pendingDelete._id;
+
     try {
       setDeletingId(id);
       setError("");
+      toast.loading("Deleting your studio...", { id: "delete-studio" });
 
       const { data, error: tokenError } = await authClient.token();
       const token = data?.token;
@@ -89,9 +105,15 @@ export default function MyListingsPage() {
         currentStudios.filter((studio) => studio._id !== id)
       );
 
+      toast.success("Studio deleted successfully!", { id: "delete-studio" });
+      setPendingDelete(null);
       router.refresh();
     } catch (error) {
       console.error(error);
+      toast.error(
+        error.message || "Something went wrong while deleting the studio.",
+        { id: "delete-studio" }
+      );
       setError(error.message || "Something went wrong while deleting the studio.");
     } finally {
       setDeletingId(null);
@@ -101,11 +123,23 @@ export default function MyListingsPage() {
   // Loading state
   if (isPending || loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center px-3">
-        <p className="text-xs text-gray-500 sm:text-sm">
-          Loading your listings...
-        </p>
-      </div>
+      <main className="min-h-screen bg-[#fff8fb] px-3 py-6 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-6 space-y-3 sm:mb-8">
+            <div className="h-3 w-28 animate-pulse rounded bg-pink-100" />
+            <div className="h-8 w-56 animate-pulse rounded-lg bg-pink-100" />
+            <div className="h-3 w-72 animate-pulse rounded bg-pink-50" />
+          </div>
+
+          <div className="mb-5 h-20 animate-pulse rounded-xl border border-pink-100 bg-white shadow-sm sm:mb-7" />
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <StudioSkeleton key={item} />
+            ))}
+          </div>
+        </div>
+      </main>
     );
   }
 
@@ -123,7 +157,7 @@ export default function MyListingsPage() {
           </p>
 
           <Link
-            href="/login"
+            href="/Login"
             className="mt-5 inline-block rounded-lg bg-pink-600 px-5 py-2 text-xs font-semibold text-white transition hover:bg-pink-700 sm:text-sm"
           >
             Log In
@@ -172,26 +206,13 @@ export default function MyListingsPage() {
 
         {/* Empty state */}
         {!error && studios.length === 0 && (
-          <div className="rounded-xl border border-pink-100 bg-white px-4 py-10 text-center shadow-sm sm:py-14">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-pink-50 text-xl text-pink-500 sm:h-14 sm:w-14 sm:text-2xl">
-              +
-            </div>
-
-            <h2 className="mt-4 text-base font-semibold text-gray-800 sm:text-lg">
-              No studio listings yet
-            </h2>
-
-            <p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-gray-500 sm:text-sm">
-              Your studios will appear here after you list them.
-            </p>
-
-            <Link
-              href="/add-studio"
-              className="mt-5 inline-block rounded-lg bg-pink-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-pink-700 sm:text-sm"
-            >
-              Add a Studio
-            </Link>
-          </div>
+          <EmptyState
+            icon="🏠"
+            title="No studio listings yet"
+            description="Your studios will appear here after you list them. Share your space and start hosting creators."
+            actionHref="/add-studio"
+            actionLabel="Add a Studio"
+          />
         )}
 
         {/* Studio cards */}
@@ -201,7 +222,7 @@ export default function MyListingsPage() {
             {studios.map((studio) => (
               <article
                 key={studio._id}
-                className="overflow-hidden rounded-xl border border-pink-100 bg-white shadow-sm transition hover:shadow-md sm:rounded-2xl"
+                className="flex h-full flex-col overflow-hidden rounded-xl border border-pink-100 bg-white shadow-sm transition hover:shadow-md sm:rounded-2xl"
               >
                 {/* Studio image */}
                 <Link
@@ -224,7 +245,7 @@ export default function MyListingsPage() {
                 </Link>
 
                 {/* Studio information */}
-                <div className="p-3 sm:p-4 md:p-5">
+                <div className="flex flex-1 flex-col p-3 sm:p-4 md:p-5">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <Link
@@ -259,7 +280,7 @@ export default function MyListingsPage() {
                   </div>
 
                   {/* Action buttons */}
-                  <div className="mt-4 grid grid-cols-2 gap-2">
+                  <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
                     <Link
                       href={`/studios/edit/${studio._id}`}
                       className="rounded-lg bg-blue-50 px-3 py-2 text-center text-xs font-semibold text-blue-600 transition hover:bg-blue-100 sm:py-2.5 sm:text-sm"
@@ -269,11 +290,11 @@ export default function MyListingsPage() {
 
                     <button
                       type="button"
-                      onClick={() => handleDelete(studio._id)}
+                      onClick={() => setPendingDelete(studio)}
                       disabled={deletingId === studio._id}
                       className="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 sm:py-2.5 sm:text-sm"
                     >
-                      {deletingId === studio._id ? "Deleting..." : "Delete"}
+                      Delete
                     </button>
                   </div>
                 </div>
@@ -282,6 +303,50 @@ export default function MyListingsPage() {
 
           </div>
         )}
+
+        {/* Delete confirmation modal */}
+        <Dialog
+          open={!!pendingDelete}
+          onOpenChange={(open) => {
+            if (!open && !deletingId) setPendingDelete(null);
+          }}
+        >
+          <DialogContent className="rounded-2xl bg-white text-gray-900 sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-gray-900">
+                Delete this studio?
+              </DialogTitle>
+
+              <DialogDescription className="text-sm text-gray-600">
+                You are about to permanently remove{" "}
+                <span className="font-semibold text-gray-800">
+                  {pendingDelete?.name || pendingDelete?.title || "this studio"}
+                </span>
+                . This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setPendingDelete(null)}
+                disabled={!!deletingId}
+                className="rounded-lg border border-pink-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={!!deletingId}
+                className="flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deletingId ? "Deleting..." : "Yes, Delete"}
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </main>
   );

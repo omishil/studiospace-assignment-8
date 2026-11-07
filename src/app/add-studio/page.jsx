@@ -3,13 +3,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { STUDIO_CATEGORY_VALUES } from "@/lib/categories";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Spinner } from "@/components/ui/spinner";
 
 import {
   Select,
@@ -27,16 +31,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const categories = [
-  "Photo Studio",
-  "Film Stage",
-  "Podcast Lounge",
-  "Music Suite",
-  "Workshop",
-  "Sound Stage",
-  "Art Studio",
-  "Other",
-];
+const categories = STUDIO_CATEGORY_VALUES;
 
 const availableAmenities = [
   "Wi-Fi",
@@ -59,9 +54,11 @@ const inputClass =
 const cardClass = "rounded-2xl border-pink-100 shadow-sm";
 
 export default function AddStudioPage() {
+  const router = useRouter();
   const [amenities, setAmenities] = useState([]);
   const [category, setCategory] = useState("");
   const [images, setImages] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   // Get logged-in user's session
   const { data: session, isPending } = authClient.useSession();
@@ -90,16 +87,19 @@ const token= data?.token
 
     // Check login
     if (!session?.user) {
-      alert("Please log in before adding a studio.");
+      toast.error("Please log in before adding a studio.");
       return;
     }
 
     if (images.length === 0) {
-      alert("Please select at least one studio image.");
+      toast.error("Please select at least one studio image.");
       return;
     }
 
     try {
+      setSubmitting(true);
+      toast.loading("Adding your studio...", { id: "add-studio" });
+
       // Upload multiple images to ImgBB
       const uploadedImages = [];
 
@@ -118,7 +118,9 @@ const token= data?.token
         const uploadData = await uploadRes.json();
 
         if (!uploadRes.ok) {
-          alert("Image upload failed");
+          toast.error("Image upload failed. Please try a different image.", {
+            id: "add-studio",
+          });
           return;
         }
 
@@ -155,16 +157,25 @@ const token= data?.token
       const result = await res.json();
 
       if (!res.ok) {
-        alert("Failed to add studio");
+        toast.error("Failed to add studio. Please try again.", {
+          id: "add-studio",
+        });
         return;
       }
 
       console.log(result);
-      alert("Studio added successfully!");
+      toast.success("Studio added successfully!", { id: "add-studio" });
+
+      router.push("/my-listings");
+      router.refresh();
 
     } catch (error) {
       console.error("Error adding studio:", error);
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.", {
+        id: "add-studio",
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -517,10 +528,17 @@ const token= data?.token
             <Button
               type="submit"
               size="lg"
-              disabled={isPending || !session?.user}
+              disabled={isPending || !session?.user || submitting}
               className="rounded-xl bg-pink-600 px-8 shadow-lg shadow-pink-200 hover:bg-pink-700"
             >
-              Add Studio →
+              {submitting ? (
+                <>
+                  <Spinner className="size-4" />
+                  Adding...
+                </>
+              ) : (
+                "Add Studio →"
+              )}
             </Button>
           </div>
         </form>

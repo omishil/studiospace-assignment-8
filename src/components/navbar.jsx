@@ -5,7 +5,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useSession, signOut } from "@/lib/auth-client";
+import ThemeToggle from "@/components/theme-toggle";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -15,11 +17,10 @@ const navLinks = [
 ];
 
 const accountLinks = [
-  { href: "/profile", label: "My Profile" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/add-studio", label: "Add New Studio" },
   { href: "/my-listings", label: "My Studio Listings" },
-  { href: "/bookings", label: "My Bookings" },
-  { href: "/saved-wishlists", label: "Saved Wishlists" },
+  { href: "/my-bookings", label: "My Bookings" },
 ];
 
 const focusRing =
@@ -49,13 +50,18 @@ export default function Navbar() {
     }`;
 
   const handleLogout = async () => {
-    await signOut();
+    try {
+      await signOut();
 
-    setMenuOpen(false);
-    setUserMenuOpen(false);
+      setMenuOpen(false);
+      setUserMenuOpen(false);
 
-    router.push("/");
-    router.refresh();
+      toast.success("Signed out successfully.");
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      toast.error(error.message || "Could not sign out. Please try again.");
+    }
   };
 
   return (
@@ -107,10 +113,18 @@ export default function Navbar() {
           ))}
         </div>
 
+        {/* Desktop theme toggle */}
+        <div className="hidden items-center md:flex">
+          <ThemeToggle />
+        </div>
+
         {/* Desktop authentication */}
         <div className="hidden items-center gap-2 md:flex">
           {isPending ? (
-            <span className="text-sm text-gray-400">Loading...</span>
+            <span className="flex items-center gap-2">
+              <span className="h-8 w-8 animate-pulse rounded-full bg-pink-100" />
+              <span className="h-3 w-16 animate-pulse rounded bg-pink-50" />
+            </span>
           ) : isLoggedIn ? (
             <div className="relative">
               <button
@@ -180,10 +194,18 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* Mobile theme toggle */}
+        <div className="flex items-center md:hidden">
+          <ThemeToggle />
+        </div>
+
         {/* Mobile authentication */}
         <div className="relative md:hidden">
           {isPending ? (
-            <span className="text-xs text-gray-400">Loading...</span>
+            <span className="flex items-center gap-2">
+              <span className="h-8 w-8 animate-pulse rounded-full bg-pink-100" />
+              <span className="h-3 w-10 animate-pulse rounded bg-pink-50" />
+            </span>
           ) : isLoggedIn ? (
             <>
               {/* Mobile profile dropdown button */}

@@ -1,26 +1,30 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
 export async function proxy(request) {
-  console.log("Proxy running:", request.nextUrl.pathname);
-
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: request.headers,
   });
 
   if (!session) {
-    return NextResponse.redirect(
-      new URL("/Login", request.url)
+    const loginUrl = new URL("/Login", request.url);
+    loginUrl.searchParams.set(
+      "callbackUrl",
+      request.nextUrl.pathname + request.nextUrl.search
     );
+
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/add-studio/:path*",
-        "/my-listings/:path*",
-
+  matcher: [
+    "/add-studio/:path*",
+    "/my-listings/:path*",
+    "/my-bookings/:path*",
+    "/dashboard/:path*",
+    "/studios/edit/:path*",
   ],
 };

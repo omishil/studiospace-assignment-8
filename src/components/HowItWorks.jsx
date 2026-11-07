@@ -35,7 +35,7 @@ export default function HowItWorks() {
   return (
     <section
       id="howitworks"
-      className="relative overflow-hidden bg-gradient-to-br from-pink-50 via-white to-rose-50 px-4 py-14 sm:px-6 sm:py-20"
+      className="relative scroll-mt-20 overflow-hidden bg-gradient-to-br from-pink-50 via-white to-rose-50 px-4 py-14 sm:px-6 sm:py-20"
     >
       {/* Soft background shapes (these give the glass something to blur) */}
       <div

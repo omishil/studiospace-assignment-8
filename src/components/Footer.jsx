@@ -1,10 +1,11 @@
 import Link from "next/link";
+import NewsletterForm from "@/components/newsletter-form";
 
 export default function Footer() {
   return (
     <footer className="border-t border-pink-200 bg-pink-50 text-pink-950">
       {/* Main Footer */}
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:grid-cols-2 sm:px-6 sm:py-14 lg:grid-cols-3 lg:gap-16">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:grid-cols-2 sm:px-6 sm:py-14 lg:grid-cols-4 lg:gap-12">
 
         {/* Brand Section */}
         <div>
@@ -78,11 +79,11 @@ export default function Footer() {
               Explore Studios
             </Link>
 
-            <Link href="/how-it-works" className="transition hover:translate-x-1 hover:text-pink-600">
+            <Link href="/#howitworks" className="transition hover:translate-x-1 hover:text-pink-600">
               How It Works
             </Link>
 
-            <Link href="/about" className="transition hover:translate-x-1 hover:text-pink-600">
+            <Link href="/#about" className="transition hover:translate-x-1 hover:text-pink-600">
               About Us
             </Link>
 
@@ -103,6 +104,19 @@ export default function Footer() {
             <p>Art Studios</p>
             <p>Podcast Studios</p>
           </div>
+        </div>
+
+        {/* Newsletter */}
+        <div>
+          <h3 className="text-sm font-bold tracking-wide text-pink-950">
+            Stay in the Loop
+          </h3>
+
+          <p className="mt-5 text-sm text-pink-800">
+            Join the StudioSpace newsletter for new spaces and creator news.
+          </p>
+
+          <NewsletterForm />
         </div>
       </div>
 

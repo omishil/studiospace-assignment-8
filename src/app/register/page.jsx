@@ -3,11 +3,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // const [passwordError, setPasswordError] = useState("");
 const router = useRouter();
  const handleSubmit = async (e) => {
@@ -35,21 +38,43 @@ const router = useRouter();
 
   // setPasswordError("");
 
-const { data, error } = await authClient.signUp.email({
-  name: signUpData.name,
-  email: signUpData.email,
-  password: signUpData.password,
-  image: signUpData.image,
-});
+  try {
+    setIsSubmitting(true);
+
+    const { error } = await authClient.signUp.email({
+      name: signUpData.name,
+      email: signUpData.email,
+      password: signUpData.password,
+      image: signUpData.image,
+    });
+
+    if (error) {
+      toast.error(error.message || "Registration failed. Please try again.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    toast.success("Account created successfully! Please log in to continue.");
+
+    setTimeout(() => {
+      router.push("/Login");
+      router.refresh();
+    }, 600);
+  } catch (error) {
+    toast.error("Something went wrong. Please try again.");
+    setIsSubmitting(false);
+  }
+};
+const handleGoogleSignUp = async () => {
+  const { error } = await authClient.signIn.social({
+    provider: "google",
+    callbackURL: "/",
+  });
 
   if (error) {
-    console.log(error.message);
-    return;
+    toast.error(error.message || "Google sign-up failed. Please try again.");
   }
-router.push("/");
-  console.log(data);
 };
-
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-[#fff8fb] px-4 py-10">
       <div className="w-full max-w-md rounded-2xl border border-pink-100 bg-white p-5 shadow-lg sm:p-8">
@@ -150,13 +175,22 @@ router.push("/");
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-pink-600 py-3 text-sm font-semibold text-white transition hover:bg-pink-700"
+            disabled={isSubmitting}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-pink-600 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Register
+            {isSubmitting ? (
+              <>
+                <Spinner className="size-4" />
+                Creating account...
+              </>
+            ) : (
+              "Register"
+            )}
           </button>
         </form>
 
         <button
+        onClick={handleGoogleSignUp}
           type="button"
           className="mt-4 flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
         >
