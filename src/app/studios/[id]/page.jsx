@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import EditDialog from "../../../components/EditDialog";
 import StudioImageSlider from "../../../components/StudioImageSlider";
 import BookingDialog from "../../../components/BookingDialog";
+import WishlistButton from "../../../components/wishlist-button";
 
 export default async function StudioDetailsPage({ params }) {
   const { id } = await params;
 
-  const res = await fetch(`http://localhost:5000/studios/${id}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/studios/${id}`);
 
   if (!res.ok) {
     notFound();
@@ -45,6 +46,8 @@ export default async function StudioDetailsPage({ params }) {
             <h1 className="text-2xl font-bold text-gray-900 sm:text-4xl">
               {studio.title}
             </h1>
+
+            <WishlistButton studioId={studio._id} className="shrink-0" />
 
             {/* Edit Button */}
             {/* <EditDialog studio={studio} studioId={id} /> */}

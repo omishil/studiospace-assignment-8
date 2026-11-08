@@ -11,7 +11,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [passwordError, setPasswordError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 const router = useRouter();
  const handleSubmit = async (e) => {
   e.preventDefault();
@@ -21,22 +21,28 @@ const router = useRouter();
 
   const password = signUpData.password;
 
-  // if (!/[A-Z]/.test(password)) {
-  //   setPasswordError("Password must contain at least one uppercase letter.");
-  //   return;
-  // }
+  if (password.length < 6) {
+    const message = "Password must be at least 6 characters long.";
+    setPasswordError(message);
+    toast.error(message);
+    return;
+  }
 
-  // if (!/[a-z]/.test(password)) {
-  //   setPasswordError("Password must contain at least one lowercase letter.");
-  //   return;
-  // }
+  if (!/[A-Z]/.test(password)) {
+    const message = "Password must contain at least one uppercase letter.";
+    setPasswordError(message);
+    toast.error(message);
+    return;
+  }
 
-  // if (password.length < 6) {
-  //   setPasswordError("Password must be at least 6 characters long.");
-  //   return;
-  // }
+  if (!/[a-z]/.test(password)) {
+    const message = "Password must contain at least one lowercase letter.";
+    setPasswordError(message);
+    toast.error(message);
+    return;
+  }
 
-  // setPasswordError("");
+  setPasswordError("");
 
   try {
     setIsSubmitting(true);
@@ -50,8 +56,15 @@ const router = useRouter();
 
     if (error) {
       toast.error(error.message || "Registration failed. Please try again.");
-      setIsSubmitting(false);
       return;
+    }
+
+    // BetterAuth signs the new user in automatically. Clear that session so
+    // registration ends on the Login page as required.
+    try {
+      await authClient.signOut();
+    } catch {
+      // Registration already succeeded; the redirect below still applies.
     }
 
     toast.success("Account created successfully! Please log in to continue.");
@@ -62,6 +75,7 @@ const router = useRouter();
     }, 600);
   } catch (error) {
     toast.error("Something went wrong. Please try again.");
+  } finally {
     setIsSubmitting(false);
   }
 };
@@ -88,7 +102,7 @@ const handleGoogleSignUp = async () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Name
@@ -138,13 +152,20 @@ const handleGoogleSignUp = async () => {
   name="password"
   type={showPassword ? "text" : "password"}
   value={password}
-  onChange={(e) => setPassword(e.target.value)}
+  onChange={(e) => {
+    setPassword(e.target.value);
+    if (passwordError) setPasswordError("");
+  }}
   required
   minLength={6}
-  pattern="(?=.*[A-Z])(?=.*[a-z]).{6,}"
-  title="Password must contain at least 6 characters, one uppercase letter, and one lowercase letter."
   placeholder="Create a password"
-  className="w-full rounded-lg border border-pink-200 px-3 py-3 pr-16 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
+  aria-invalid={!!passwordError}
+  aria-describedby={passwordError ? "password-error" : "password-rules"}
+  className={`w-full rounded-lg border px-3 py-3 pr-16 text-sm outline-none focus:ring-2 focus:ring-pink-100 ${
+    passwordError
+      ? "border-red-400 focus:border-red-500"
+      : "border-pink-200 focus:border-pink-500"
+  }`}
 />
 
               <button
@@ -160,17 +181,21 @@ const handleGoogleSignUp = async () => {
               Password must contain:
             </p>
 
-            <ul className="mt-1 space-y-1 text-xs text-gray-500">
+            <ul id="password-rules" className="mt-1 space-y-1 text-xs text-gray-500">
               <li>• At least 6 characters</li>
               <li>• One uppercase letter (A-Z)</li>
               <li>• One lowercase letter (a-z)</li>
             </ul>
 
-            {/* {passwordError && (
-              <p className="mt-2 text-xs font-medium text-red-600">
+            {passwordError && (
+              <p
+                id="password-error"
+                role="alert"
+                className="mt-2 text-xs font-medium text-red-600"
+              >
                 {passwordError}
               </p>
-            )} */}
+            )}
           </div>
 
           <button

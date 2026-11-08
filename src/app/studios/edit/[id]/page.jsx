@@ -78,7 +78,7 @@ if (error || !token) {
 }
 
 const res = await fetch(
-  `http://localhost:5000/studios/${id}`,
+  `${process.env.NEXT_PUBLIC_API_URL}/studios/${id}`,
   {
     headers: {
       authorization: `Bearer ${token}`,
@@ -159,7 +159,7 @@ const res = await fetch(
         imageFormData.append("image", image);
 
         const uploadRes = await fetch(
-          "http://localhost:5000/upload-image",
+          `${process.env.NEXT_PUBLIC_API_URL}/upload-image`,
           {
             method: "POST",
             body: imageFormData,
@@ -195,7 +195,7 @@ if (error || !token) {
 
 // Update MongoDB
 const res = await fetch(
-  `http://localhost:5000/studios/${id}`,
+  `${process.env.NEXT_PUBLIC_API_URL}/studios/${id}`,
   {
     method: "PATCH",
     headers: {

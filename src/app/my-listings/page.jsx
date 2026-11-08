@@ -45,7 +45,7 @@ export default function MyListingsPage() {
         const email = encodeURIComponent(session.user.email);
 
         const response = await fetch(
-          `http://localhost:5000/my-listings/${email}`
+          `${process.env.NEXT_PUBLIC_API_URL}/my-listings/${email}`
         );
 
         if (!response.ok) {
@@ -86,7 +86,7 @@ export default function MyListingsPage() {
       const email = encodeURIComponent(session.user.email);
 
       const response = await fetch(
-        `http://localhost:5000/studios/${id}?email=${email}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/studios/${id}?email=${email}`,
         {
           method: "DELETE",
           headers: {

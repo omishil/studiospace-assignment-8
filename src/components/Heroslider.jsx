@@ -29,7 +29,7 @@ const slides = [
     primaryText: "Explore Studios",
     primaryLink: "/studios",
     secondaryText: "Host Your Space",
-    secondaryLink: "/studios",
+    secondaryLink: "/add-studio",
   },
   {
     id: 2,
@@ -41,7 +41,7 @@ const slides = [
     primaryText: "Explore Studios",
     primaryLink: "/studios",
     secondaryText: "Host Your Space",
-    secondaryLink: "/studios",
+    secondaryLink: "/add-studio",
   },
   {
     id: 3,
@@ -51,7 +51,7 @@ const slides = [
       "Share your creative space with a community of creators and turn your studio into an opportunity.",
     image: "/professional-studio-background_1036687-3915.avif",
     primaryText: "Host Your Space",
-    primaryLink: "/studios",
+    primaryLink: "/add-studio",
     secondaryText: "Explore Studios",
     secondaryLink: "/studios",
   },

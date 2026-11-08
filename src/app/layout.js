@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/Footer";
 import ThemeProvider from "@/components/theme-provider";
+import WishlistProvider from "@/components/wishlist-provider";
 import AppToaster from "@/components/app-toaster";
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -24,10 +25,12 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full font-[var(--font-poppins)]">
         <ThemeProvider>
-          <Navbar />
-          {children} <AppToaster />
+          <WishlistProvider>
+            <Navbar />
+            {children} <AppToaster />
 
-          <Footer></Footer>
+            <Footer></Footer>
+          </WishlistProvider>
         </ThemeProvider>
       </body>
     </html>

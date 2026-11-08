@@ -27,7 +27,7 @@ export default function EditDialog({
 
     try {
       const res = await fetch(
-        `http://localhost:5000/studios/${studio._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/studios/${studio._id}`,
         {
           method: "PATCH",
           headers: {

@@ -55,7 +55,7 @@ export default function MyBookingsPage() {
         setLoading(true);
 
         const response = await fetch(
-          `http://localhost:5000/bookings?email=${encodeURIComponent(customerEmail)}`
+          `${process.env.NEXT_PUBLIC_API_URL}/bookings?email=${encodeURIComponent(customerEmail)}`
         );
 
         if (!response.ok) {
@@ -101,7 +101,7 @@ export default function MyBookingsPage() {
       toast.loading("Cancelling your booking...", { id: "cancel-booking" });
 
       const response = await fetch(
-        `http://localhost:5000/bookings/${bookingId}/cancel`,
+        `${process.env.NEXT_PUBLIC_API_URL}/bookings/${bookingId}/cancel`,
         {
           method: "PATCH",
           headers: {

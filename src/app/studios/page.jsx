@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import StudioSkeleton from "@/components/StudioSkeleton";
 import EmptyState from "@/components/EmptyState";
+import WishlistButton from "@/components/wishlist-button";
 import { STUDIO_CATEGORY_VALUES } from "@/lib/categories";
 
 const categories = ["All", ...STUDIO_CATEGORY_VALUES];
@@ -39,7 +40,7 @@ function StudiosContent({ limit }) {
   useEffect(() => {
     const fetchStudios = async () => {
       try {
-        const res = await fetch("http://localhost:5000/studios");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/studios`);
 
         if (!res.ok) {
           throw new Error("Failed to fetch studios");
@@ -146,6 +147,11 @@ function StudiosContent({ limit }) {
                   fill
                   unoptimized
                   className="object-cover"
+                />
+
+                <WishlistButton
+                  studioId={studio._id}
+                  className="absolute right-2 top-2 z-10 sm:right-3 sm:top-3"
                 />
               </div>
 

@@ -1,6 +1,6 @@
 
 import Heroslider from "@/components/Heroslider";
-import StudiosPage from "./studios/page";
+import FeaturedStudios from "@/components/FeaturedStudios";
 import HowItWorks from "@/components/HowItWorks";
 import HostGuarantee from "@/components/HostGuarantee";
 import AboutUs from "@/AboutUs";
@@ -32,7 +32,7 @@ export default function Home() {
           </p>
         </div>
 
-        <StudiosPage limit={6} />
+        <FeaturedStudios />
       </section>
       {/* how it works section */}
       <HowItWorks id="howitworks"></HowItWorks>

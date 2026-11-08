@@ -108,7 +108,7 @@ const token= data?.token
         imageFormData.append("image", image);
 
         const uploadRes = await fetch(
-          "http://localhost:5000/upload-image",
+          `${process.env.NEXT_PUBLIC_API_URL}/upload-image`,
           {
             method: "POST",
             body: imageFormData,
@@ -145,7 +145,7 @@ const token= data?.token
       studioData.hostId = hostId;
 
       // Save studio data to MongoDB
-      const res = await fetch("http://localhost:5000/add-studio", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/add-studio`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

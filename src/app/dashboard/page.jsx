@@ -69,8 +69,8 @@ export default function DashboardPage() {
         setLoading(true);
 
         const [studiosRes, bookingsRes] = await Promise.all([
-          fetch(`http://localhost:5000/my-listings/${encodeURIComponent(email)}`),
-          fetch(`http://localhost:5000/bookings?email=${encodeURIComponent(email)}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-listings/${encodeURIComponent(email)}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings?email=${encodeURIComponent(email)}`),
         ]);
 
         if (studiosRes.ok) {

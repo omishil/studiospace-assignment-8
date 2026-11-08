@@ -24,6 +24,7 @@ export const config = {
     "/add-studio/:path*",
     "/my-listings/:path*",
     "/my-bookings/:path*",
+    "/wishlist/:path*",
     "/dashboard/:path*",
     "/studios/edit/:path*",
   ],

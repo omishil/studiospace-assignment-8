@@ -18,7 +18,7 @@ const ForgotPassPage = () => {
           </h1>
 
           <p className="mt-2 text-xs leading-relaxed text-gray-500 sm:text-sm">
-            Don't worry! Enter your email address and we'll help you reset your password.
+            Don&apos;t worry! Enter your email address and we&apos;ll help you reset your password.
           </p>
         </div>
 
