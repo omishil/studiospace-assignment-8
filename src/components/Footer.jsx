@@ -1,7 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import NewsletterForm from "@/components/newsletter-form";
+import { STUDIO_CATEGORIES } from "@/lib/categories";
 
 export default function Footer() {
+  const [openQuickNav, setOpenQuickNav] = useState(false);
+  const [openCategories, setOpenCategories] = useState(false);
+
   return (
     <footer className="border-t border-pink-200 bg-pink-50 text-pink-950">
       {/* Main Footer */}
@@ -66,11 +73,42 @@ export default function Footer() {
 
         {/* Quick Navigation */}
         <div>
-          <h3 className="text-sm font-bold tracking-wide text-pink-950">
+          <h3 className="hidden text-sm font-bold tracking-wide text-pink-950 sm:block">
             Quick Navigation
           </h3>
 
-          <div className="mt-5 flex flex-col gap-3 text-sm text-pink-800">
+          <button
+            type="button"
+            onClick={() => setOpenQuickNav((prev) => !prev)}
+            aria-expanded={openQuickNav}
+            aria-controls="footer-quick-navigation"
+            className="flex w-full items-center justify-between text-sm font-bold tracking-wide text-pink-950 sm:hidden"
+          >
+            Quick Navigation
+            <svg
+              className={`h-4 w-4 transition-transform ${
+                openQuickNav ? "rotate-180" : "rotate-0"
+              }`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <div
+            id="footer-quick-navigation"
+            className={`mt-5 text-sm text-pink-800 ${
+              openQuickNav
+                ? "flex flex-col gap-3"
+                : "hidden sm:flex sm:flex-col sm:gap-3"
+            }`}
+          >
             <Link href="/" className="transition hover:translate-x-1 hover:text-pink-600">
               Home
             </Link>
@@ -93,16 +131,51 @@ export default function Footer() {
 
         {/* Popular Categories */}
         <div>
-          <h3 className="text-sm font-bold tracking-wide text-pink-950">
+          <h3 className="hidden text-sm font-bold tracking-wide text-pink-950 sm:block">
             Popular Categories
           </h3>
 
-          <div className="mt-5 flex flex-col gap-3 text-sm text-pink-800">
-            <p>Photography Studios</p>
-            <p>Music Studios</p>
-            <p>Film Studios</p>
-            <p>Art Studios</p>
-            <p>Podcast Studios</p>
+          <button
+            type="button"
+            onClick={() => setOpenCategories((prev) => !prev)}
+            aria-expanded={openCategories}
+            aria-controls="footer-popular-categories"
+            className="flex w-full items-center justify-between text-sm font-bold tracking-wide text-pink-950 sm:hidden"
+          >
+            Popular Categories
+            <svg
+              className={`h-4 w-4 transition-transform ${
+                openCategories ? "rotate-180" : "rotate-0"
+              }`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <div
+            id="footer-popular-categories"
+            className={`mt-5 text-sm text-pink-800 ${
+              openCategories
+                ? "flex flex-col gap-3"
+                : "hidden sm:flex sm:flex-col sm:gap-3"
+            }`}
+          >
+            {STUDIO_CATEGORIES.map((category) => (
+              <Link
+                key={category.value}
+                href={`/studios?category=${encodeURIComponent(category.value)}`}
+                className="transition hover:translate-x-1 hover:text-pink-600"
+              >
+                {category.value}
+              </Link>
+            ))}
           </div>
         </div>
 

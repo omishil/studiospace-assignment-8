@@ -4,24 +4,26 @@
 
 ## Live Site
 
-**Live URL:**
+**Live URL:** https://studiospace-hazel.vercel.app/
 
-**Client Repository:**   
-**Server Repository:** 
+**Client Repository:** https://github.com/omishil/studiospace-assignment-8.git  
+**Server Repository:** https://github.com/omishil/studiospace-server-.git
 
 ## Features
 
-- **Curated studio marketplace** — browse photography studios, film stages, podcast lounges, music suites, and art workshops from a single grid.
+- **Curated studio marketplace** — browse Photo Studios, Sound Stages, Podcast Rooms, Music Suites, and Art Workshops from a single grid.
 - **Hero slider** — three interactive Swiper slides with animated headlines, imagery, and Explore / Host calls to action.
 - **Featured studios** — the six top-rated spaces fetched dynamically from MongoDB and rendered as equal-height cards with rating, category, location, and hourly rate.
-- **Category filtering** — category cards on the home page deep-link to `/studios?category=...` with the filter pre-selected.
+- **Category filtering** — category cards on the home page and the footer's Popular Categories deep-link to `/studios?category=...` with the filter pre-selected.
 - **Full studio CRUD** — hosts can add, update, and delete listings from dedicated private pages, including gallery images, amenities, capacity, security deposit, and host details.
 - **Secure authentication** — email/password and Google social login via BetterAuth, with JWT-protected server mutations and private-route protection.
 - **Booking system** — reservations are saved with a `Pending` status; the My Bookings page shows status badges (Pending, Confirmed, Completed, Cancelled) and lets creators cancel pending slots.
+- **Wishlist / favorites** — signed-in creators can save studios from any listing card and review them on a dedicated Wishlist page.
+- **Host & creator dashboard** — a private `/dashboard` with quick actions plus a summary of the user's listings and bookings.
 - **Double-booking prevention** — the API rejects overlapping reservations before saving a new one.
 - **Dark / light theme** — a full-system theme toggle with persisted preference and toast-aware theming.
 - **Polished UX** — Sonner toast notifications, branded skeleton loaders and spinners, custom 404 page with studio illustration, and friendly empty states with CTAs.
-- **Responsive design** — optimized layouts for mobile, tablet, and desktop, with a sticky navbar featuring active-route indicators.
+- **Responsive design** — optimized layouts for mobile, tablet, and desktop, with a sticky navbar featuring active-route indicators and a footer that collapses its link groups on small screens.
 - **Newsletter signup, footer navigation, and X (Twitter) rebrand logo** — consistent branding across every route.
 
 ## Tech Stack
@@ -44,7 +46,7 @@
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 20.9+
 - npm
 - A MongoDB Atlas connection string
 - Google OAuth credentials (optional, for social login)
@@ -87,12 +89,15 @@ npm install
 Create `.env`:
 
 ```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
 BETTER_AUTH_SECRET=your_better_auth_secret
 BETTER_AUTH_URL=http://localhost:3000
 MONGODB_URL=your_mongodb_connection_string
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
+
+`NEXT_PUBLIC_API_URL` must point at the running API server; when deploying the client, set it to the deployed server URL.
 
 ```bash
 npm run dev
@@ -109,10 +114,10 @@ npm start
 
 ## Examiner Test Credentials
 
-**Email:** `examiner@studiospace.com`  
-**Password:** `Examiner123`
+**Email:** `omi@gmail.com`  
+**Password:** `11111111Aa`
 
-> Replace these with a working account before submitting. The account should have at least one studio listing and one booking so every page can be reviewed.
+This account owns 7 studio listings and has booking history, so My Listings, My Bookings, and the Dashboard are populated. Existing bookings are all in `Cancelled` status — create a new booking to see the `Pending` flow.
 
 ## Available Scripts
 
@@ -125,6 +130,6 @@ npm start
 
 ## Notes
 
-- The server runs on port `5000` and the client expects `http://localhost:5000` in development.
+- The server runs on port `5000` in development; set `NEXT_PUBLIC_API_URL=http://localhost:5000` so the client can reach it.
 - Studio details and booking pages are public or session-protected as appropriate; private routes never redirect a logged-in user back to Login on reload.
 - Email verification and password reset are intentionally disabled to keep examiner testing simple.
